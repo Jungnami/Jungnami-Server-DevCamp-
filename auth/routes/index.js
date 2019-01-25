@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-router.use('/login', require('./api/auth/login'));
+router.use('/auth', require('./api/auth/index'));
+router.use('/user', require('./api/user/index'));
 
 module.exports = router;
