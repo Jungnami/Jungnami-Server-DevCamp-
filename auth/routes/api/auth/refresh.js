@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-const authUtil = require('../../../module/utils/authUtil');
-const responseMessage = require('../../../module/utils/responseMessage');
-const statusCode = require('../../../module/utils/statusCode');
+const authUtil = require('../../../../commons/utils/authUtil');
+const responseMessage = require('../../../../commons/utils/responseMessage');
+const statusCode = require('../../../../commons/utils/statusCode');
 const db = require('../../../module/pool');
 const jwt = require('../../../module/jwt');
 
