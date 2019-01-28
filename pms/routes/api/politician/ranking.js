@@ -14,7 +14,7 @@ router.get('/party', async(req, res, next) => {
     } else if(req.query.condition == 'like') {
         selectParty += 'ORDER BY v.like_cnt DESC';
         queryResult = await db.queryParam_Arr(selectParty, req.query.party);
-        console.log(queryResult);
+        console.log(queryResult) ;
 
         if(!queryResult) {
             res.status(state.OK).send(state.DB_ERROR);
@@ -49,7 +49,7 @@ router.get('/party', async (req, res, next) => {
 
 
 //지역별 목록
-router.get('/region', (req, res, next) => {
+router.get('/region', async (req, res, next) => {
     let selectRegion = 'SELECT * FROM legislator AS l LEFT JOIN vote_result AS v ON p.city_cd=v.city_cd WHERE p.city_cd = ? ';
     let queryResult;
     if(!req.query.city_cd){
@@ -79,7 +79,7 @@ router.get('/region', (req, res, next) => {
     }
 });
 
-router.get('/region', (req, res, next) => {
+router.get('/region', async (req, res, next) => {
     const selectParty = 'SELECT * FROM city'
     const selectPartyResult = await db.queryParam_None(selectParty);
 
