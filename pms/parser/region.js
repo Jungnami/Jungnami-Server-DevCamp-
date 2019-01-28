@@ -23,7 +23,7 @@ module.exports = {
 
             region_cd = JSON.stringify(item[i].origCd).replace(/['"]+/g, '');
             region_name = JSON.stringify(item[i].origNm).replace(/['"]+/g, '');
-            city = region_name.split(' ')[0];
+            city = region_name.split(' ')[0]; 
             
             result[i].push(region_cd, city, region_name);
         }

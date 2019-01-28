@@ -4,27 +4,31 @@ const db = require('../module/pool');
 const getCode = require('./getCode');
 const getUrl  = require('./getUrl');
 const { serviceKey } = require('../config/api');
-const url = 'http://apis.data.go.kr/9710000/NationalAssemblyInfoService/getMemberDetailInfoList';
+let { url } = require('../config/api');
+url += 'getMemberDetailInfoList';
 
-let queryParams = '?' + encodeURIComponent('ServiceKey') + '=' + serviceKey;
-queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('300');
 
-console.log(queryParams)
-async function getDetail(err){
-    const dept_cd = await getCode.getInfo();
-    if(err) return;
+module.exports = {
+    detail : async() => {
+        let queryParams = '?' + encodeURIComponent('ServiceKey') + '=' + serviceKey;
+        queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('300');
 
-    let result = new Array();
+        const dept_cd = await getCode.getInfo();
+        if(err) return;
 
-    for (let i = 0; i < dept_cd.length; i++){
-        result[i] = await getUrl.getParam(url, queryParams, dept_cd[i]);
-        console.log(result[i])
+        let result = new Array();
+
+        for (let i = 0; i < dept_cd.length; i++){
+            result[i] = await getUrl.getParam(url, queryParams, dept_cd[i]);
+        }
+        //Insert into legislator
+        const updateQuery = 'UPDATE legislator (party_name, ordina, phone) SET ?';
+        const updateResult = await db.queryParams_Parse(updateQuery, [result]);
+        console.log(updateResult);
+
+        //Update party_cd
+        const updatePartyQuery = 'UPDATE legislator, city LEFT JOIN legistor l ON l.city = city.city_name SET l.city_cd = city.city_cd';
+        const updatePartyResult = await db.queryParam_None(updatePartyQuery);
+        console.log(updatePartyResult);
     }
-
-    // const insertQuery = 'INSERT INTO legislator VALUES ?';
-    // const insertResult = await debug.queryParams_Parse(insertQuery);
-    // const detailQuery = 'INSERT INTO detail_legislator VALUES ?';
-    // const detailResult = await debug.queryParams_Parse(detailQuery);
 }
-
-getDetail();
