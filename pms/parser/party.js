@@ -27,6 +27,5 @@ module.exports = {
         }
         const insertQuery = 'INSERT INTO party VALUES ?';
         const insertResult = await db.queryParam_Parse(insertQuery, [result]);
-        console.log(insertResult);
     }
 }

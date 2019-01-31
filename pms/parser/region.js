@@ -30,10 +30,8 @@ module.exports = {
 
         const insertQuery = 'INSERT INTO region VALUES ?';
         const insertResult = await db.queryParam_Parse(insertQuery, [result]);
-        console.log(insertResult);
 
-        const cityQuery = 'INSERT INTO city (city_name) SELECT region_name FROM region GROUP BY city'
+        const cityQuery = 'INSERT city (city_name) SELECT city FROM region GROUP BY city';
         const cityResult = await db.queryParam_None(cityQuery);
-        console.log(cityResult);
     }
 }

@@ -7,7 +7,6 @@ let { url } = require('../config/api');
 module.exports = {
     legislator : async() => {
         url += 'getMemberCurrStateList';
-        console.log(url)
         let queryParams = '?' + encodeURIComponent('ServiceKey') + '=' + serviceKey;
         queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('400');
 
@@ -31,17 +30,15 @@ module.exports = {
             city = region.split(' ')[0];
             profile_img = JSON.stringify(item[i].jpgLink).replace(/['"]+/g, '');
 
-            legislator[i].push(legi_cd, legi_name, region, profile_img, dept_cd, reelection);
+            legislator[i].push(legi_cd, legi_name, city, region, profile_img, dept_cd, reelection);
         }
         
         //Insert into ligislator
-        const insertLegiQuery = 'INSERT INTO legislator (legi_cd, legi_name, region, profile_img, dept_cd, reelection) VALUES ?';
+        const insertLegiQuery = 'INSERT INTO legislator(legi_cd, legi_name, city_name, region, profile_img, dept_cd, reelection) VALUES ?';
         const insertLegiResult = await db.queryParam_Parse(insertLegiQuery, [legislator]);
-        console.log(insertLegiResult)
 
         //Update city_cd
-        const insertCityQuery = 'UPDATE legislator, city LEFT JOIN legistor l ON l.city = city.city_name SET l.city_cd = city.city_cd';
+        const insertCityQuery = 'UPDATE legislator, city LEFT JOIN legislator l ON l.city_name = city.city_name SET l.city_cd = city.city_cd';
         const insertCityResult = await db.queryParam_None(insertCityQuery);
-        console.log(insertCityResult)
     }
 }
