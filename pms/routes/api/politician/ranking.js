@@ -1,73 +1,56 @@
 const express = require('express');
 const db = require('../../../module/pool');
-const state = require('../../../module/utils/statusCode');
+const statusCode = require('../../../module/utils/statusCode');
+const responseMessage = require('../../../../commons/utils/responseMessage');
+const pmsUtil = require('../../../../commons/utils/pmsUtil');
 
 const router = express.Router();
 
 // 정당별 목록
-// SELECT p.name, v.like_cnt, v.dislike_cnt FROM politician AS p LEFT JOIN vote_result AS v ON p.code = v.code WHERE p.city_cd=10007 ORDER BY v.like_cnt DESC;
-router.get('/party', async(req, res, next) => {
-    let selectParty = 'SELECT * FROM legislator AS l LEFT JOIN vote_result AS v ON p.legi_cd=v.legi_cd WHERE p.party_cd = ? ';
-    let queryResult;
-    if(!req.query.code){
-        next();
-    } else if(req.query.condition == 'like') {
+router.get('/party/:party_cd/:vote', async(req, res, next) => {
+    let selectParty = 'SELECT l.idx, l.legi_name, l.region, l.party_cd, l.profile_img, v.like_cnt, v.dislike_cnt FROM legislator AS l LEFT JOIN vote_result AS v ON l.idx=v.idx WHERE l.party_cd = ? ';
+    let selectPartyResult;
+    const party_cd = parseInt(req.params.party_cd);
+    if(req.params.vote == 'like'){
         selectParty += 'ORDER BY v.like_cnt DESC';
-        queryResult = await db.queryParam_Arr(selectParty, req.query.party);
-        console.log(queryResult);
-
-        if(!queryResult) {
-            res.status(state.OK).send(state.DB_ERROR);
+        console.log(selectParty)
+        selectPartyResult = await db.queryParam_Arr(selectParty, party_cd);
+    
+        if(!selectPartyResult) {
+            res.status(statusCode.OK).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
         } else {
-            res.status(state.OK).send(queryResult);
+            res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.LIST_SUCCESS, selectPartyResult));
         }
-    } else if(req.query.condition == 'dislike'){
+    } else if(req.params.vote == 'dislike') {
         selectParty += 'ORDER BY v.dislike_cnt DESC';
-        queryResult = await db.queryParam_Arr(selectParty, req.query.party);
-        console.log(queryResult);
+        selectPartyResult = await db.queryParam_Arr(selectParty, req.params.party_cd);
 
-        if(!queryResult) {
-            res.status(state.OK).send(state.DB_ERROR);
+        if(!selectPartyResult) {
+            res.status(statusCode.OK).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
         } else {
-            res.status(state.OK).send(queryResult);
+            res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.LIST_SUCCESS, selectPartyResult));
         }
-    }
-})
-
-router.get('/party', async (req, res, next) => {
-    const selectParty = 'SELECT * FROM party'
-    const selectPartyResult = await db.queryParam_None(selectParty);
-
-    console.log(selectPartyResult);
-
-    if(!selectPartyResult) {
-        res.status(state.OK).send(state.DB_ERROR);
-    } else {
-        res.status(state.OK).send(selectPartyResult);
     }
 });
-
 
 //지역별 목록
-router.get('/region', (req, res, next) => {
-    let selectRegion = 'SELECT * FROM legislator AS l LEFT JOIN vote_result AS v ON p.city_cd=v.city_cd WHERE p.city_cd = ? ';
+router.get('/region/:city_cd/:vote', async (req, res, next) => {
+    let selectRegion = 'SELECT l.idx, l.legi_name, l.city_cd, l.region, l.party_cd, l.profile_img, v.like_cnt, v.dislike_cnt FROM legislator AS l LEFT JOIN vote_result AS v ON l.idx=v.idx WHERE l.city_cd = ? ';
     let queryResult;
-    if(!req.query.city_cd){
-        next();
-    } else if(req.query.condition == 'like') {
-        selectRegion += 'ORDER BY v.like_cnt DESC';
-        queryResult = await db.queryParam_Arr(selectRegion, req.query.city_cd);
-
-        console.log(queryResult);
-
-        if(!queryResult) {
-            res.status(state.OK).send(state.DB_ERROR);
-        } else {
-            res.status(state.OK).send(queryResult);
-        }
-    } else if(req.query.condition == 'dislike'){
+    if(req.params.vote == 'like') {
         selectRegion += 'ORDER BY v.dislike_cnt DESC';
-        queryResult = await db.queryParam_Arr(selectRegion, req.query.city_cd);
+        queryResult = await db.queryParam_Arr(selectRegion, req.params.city_cd);
+
+        console.log(queryResult);
+
+        if(!queryResult) {
+            res.status(statusCode.OK).send(state.DB_ERROR);
+        } else {
+            res.status(statusCode.OK).send(queryResult);
+        }
+    } else if(req.params.vote == 'dislike'){
+        selectRegion += 'ORDER BY v.dislike_cnt DESC';
+        queryResult = await db.queryParam_Arr(selectRegion, req.params.city_cd);
 
         console.log(queryResult);
 
@@ -76,19 +59,6 @@ router.get('/region', (req, res, next) => {
         } else {
             res.status(state.OK).send(queryResult);
         }
-    }
-});
-
-router.get('/region', (req, res, next) => {
-    const selectParty = 'SELECT * FROM city'
-    const selectPartyResult = await db.queryParam_None(selectParty);
-
-    console.log(selectPartyResult);
-
-    if(!selectPartyResult) {
-        res.status(state.OK).send(state.DB_ERROR);
-    } else {
-        res.status(state.OK).send(selectPartyResult);
     }
 });
 

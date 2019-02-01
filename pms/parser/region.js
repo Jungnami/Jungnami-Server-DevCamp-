@@ -23,17 +23,15 @@ module.exports = {
 
             region_cd = JSON.stringify(item[i].origCd).replace(/['"]+/g, '');
             region_name = JSON.stringify(item[i].origNm).replace(/['"]+/g, '');
-            city = region_name.split(' ')[0];
+            city = region_name.split(' ')[0]; 
             
             result[i].push(region_cd, city, region_name);
         }
 
         const insertQuery = 'INSERT INTO region VALUES ?';
         const insertResult = await db.queryParam_Parse(insertQuery, [result]);
-        console.log(insertResult);
 
-        const cityQuery = 'INSERT INTO city (city_name) SELECT region_name FROM region GROUP BY city'
+        const cityQuery = 'INSERT city (city_name) SELECT city FROM region GROUP BY city';
         const cityResult = await db.queryParam_None(cityQuery);
-        console.log(cityResult);
     }
 }
