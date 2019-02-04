@@ -9,3 +9,6 @@ views/
 
 # modules
 module/
+
+#vote result file
+*.txt
