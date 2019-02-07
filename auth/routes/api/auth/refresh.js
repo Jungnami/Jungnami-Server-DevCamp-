@@ -1,14 +1,18 @@
 var express = require('express');
 var router = express.Router();
+var moment = require('moment');
 
 const authUtil = require('../../../../commons/utils/authUtil');
 const responseMessage = require('../../../../commons/utils/responseMessage');
 const statusCode = require('../../../../commons/utils/statusCode');
 const db = require('../../../module/pool');
 const jwt = require('../../../module/jwt');
+const redisClient = require('../../../module/redis');
 
 router.post('/', async (req, res) => {
+    console.log(req.user);
     let refreshToken = req.body.refreshToken;
+    let expToken = req.body.expToken;
 
     if (!refreshToken) {
         res.status(200).send(authUtil.successFalse(null, responseMessage.EMPTY_REFRESH_TOKEN, statusCode.AUTH_BAD_REQUEST));
@@ -20,9 +24,12 @@ router.post('/', async (req, res) => {
         if (!findUserByRefreshResult || findUserByRefreshResult.length == 0) {
             res.status(200).send(authUtil.successFalse(null, responseMessage.NOT_FOUND_USER, statusCode.AUTH_DB_ERROR));
         } else {
-            const newToken = jwt.sign(findUserByRefreshResult);
+            const newToken = jwt.sign(findUserByRefreshResult[0]);
             //TODO redis에 값 수정
+            redisClient.del(expToken);
+            redisClient.hmset(newToken, 'access_date', moment().format('YYYY-MM-DD hh:mm:ss'));
             res.status(200).send(authUtil.successTrue(responseMessage.REFRESH_TOKEN, newToken));
+        
         }
     }
 });
