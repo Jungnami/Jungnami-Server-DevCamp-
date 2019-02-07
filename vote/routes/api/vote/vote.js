@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
+var moment = require('moment');
 
 const authUtil = require('../../../../commons/utils/authUtil');
 const responseMessage = require('../../../../commons/utils/responseMessage');
 const statusCode = require('../../../../commons/utils/statusCode');
 const db = require('../../../module/pool');
 
-//의원 호감 투표
+//의원 호감, 비호감 투표
 router.post('/', authUtil.isLoggedin, async (req, res) => {
     let isLike = parseInt(req.query.isLike);
     let legiCd = parseInt(req.query.code);
@@ -39,6 +40,18 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
                 res.status(200).send(authUtil.successTrue(responseMessage.USER_VOTE_SUCCESS));
             }
         }
+    }
+});
+
+//투표권 지급
+router.put('/ballot', authUtil.isLoggedin, (req, res) => {
+    var updateBallotQuery = 'UPDATE vote SET ballot = ballot + 5, update_date = ?, sequence = sequence + 1 WHERE idx = ?';
+    let updateBallotResult = await db.queryParam_Arr(updateBallotQuery, [moment().format('YYYY-MM-DD hh:mm:ss'), req.decoded.idx]);
+
+    if (!updateBallotResult) {
+        res.status(200).send(authUtil.successFalse(null, responseMessage.USER_BALLOT_INCRESE_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
+    } else {
+        res.status(200).send(authUtil.responseMessage.USER_BALLOT_SUCCESS, statusCode.VOTE_OK);
     }
 });
 
