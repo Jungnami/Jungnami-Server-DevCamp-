@@ -6,7 +6,13 @@ const responseMessage = require('../../../../commons/utils/responseMessage');
 const statusCode = require('../../../../commons/utils/statusCode');
 const db = require('../../../module/pool');
 
-router.get('/check', authUtil.isLoggedin, async (req, res) => {
+const redisClient = require('../../../module/redis');
+
+router.get('/check', async (req, res) => {
+    redisClient.hgetall(req.headers['token'], (err, obj) => {
+        console.log(obj);
+        console.log(obj.access_date);
+    })
     res.status(200).send(req.decoded);
 });
 
@@ -22,11 +28,5 @@ router.get('/list', authUtil.isAdmin, async (req, res) => {
         res.status(200).send(authUtil.successTrue(responseMessage.READ_USER, getAllUserResult));
     }
 });
-
-
-
-
-
-
 
 module.exports = router;

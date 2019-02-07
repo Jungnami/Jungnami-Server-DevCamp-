@@ -19,18 +19,18 @@ CREATE TABLE membership
 
 CREATE TABLE vote
 (
-    `idx`          INT            NOT NULL    COMMENT '유저 인덱스', 
-    `ballot`       VARCHAR(45)    NOT NULL    COMMENT '투표권 개수', 
-    `update_date`  DATETIME       NOT NULL    COMMENT '투표권 갱신 날짜', 
+    `idx`          INT         NOT NULL    COMMENT '유저 인덱스', 
+    `ballot`       INT         NOT NULL    COMMENT '투표권 개수', 
+    `update_date`  DATETIME    NOT NULL    COMMENT '투표권 갱신 날짜', 
     PRIMARY KEY (idx)
 );
 
 ALTER TABLE vote ADD CONSTRAINT FK_vote_idx_membership_idx FOREIGN KEY (idx)
- REFERENCES membership (idx)  ON DELETE CASCADE ON UPDATE CASCADE;
+ REFERENCES membership (idx)  ON DELETE RESTRICT ON UPDATE RESTRICT;
  
- CREATE TABLE party
+CREATE TABLE party
 (
-    `party_cd`    INT            NOT NULL        COMMENT '정당코드', 
+    `party_cd`    INT            NOT NULL    COMMENT '정당코드', 
     `party_name`  VARCHAR(45)    NULL        COMMENT '정당이름', 
     PRIMARY KEY (party_cd)
 );
@@ -92,10 +92,3 @@ ALTER TABLE vote_result ADD CONSTRAINT FK_vote_result_idx_legislator_idx FOREIGN
 
 ALTER TABLE summary ADD CONSTRAINT FK_summary_code_legislator_legi_cd FOREIGN KEY (code)
  REFERENCES legislator (legi_cd)  ON DELETE CASCADE ON UPDATE CASCADE;
- 
- 
- 
- 
- 
- 
- 

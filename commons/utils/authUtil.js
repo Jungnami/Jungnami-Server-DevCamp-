@@ -53,7 +53,7 @@ const authUtil = {
             const user = jwt.verify(token);
             
             if (user == -3) {
-                return res.json(authUtil.successFalse(null, responseMessage.EMPTY_TOKEN, statusCode.AUTH_BAD_REQUEST));
+                return res.json(authUtil.successFalse(null, responseMessage.INVALID_TOKEN, statusCode.AUTH_BAD_REQUEST));
             } else if (user == -2) {
                 return res.json(authUtil.successFalse(null, responseMessage.EMPTY_TOKEN, statusCode.AUTH_BAD_REQUEST));
             } else {
