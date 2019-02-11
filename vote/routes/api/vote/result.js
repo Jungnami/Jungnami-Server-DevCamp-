@@ -85,7 +85,7 @@ cron.schedule('*/5 * * * *', async () => {
     let getAllDislikeResult = await db.queryParam_None(getAllDislikeQuery);
 
     if (!getAllLikeResult || !getAllDislikeResult) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.VOTE_RESULT_DELETE_ERROR, statusCode.VOTE_VOTE_RESULT_DB_ERROR));
+        //res.status(200).send(authUtil.successFalse(null, responseMessage.VOTE_RESULT_DELETE_ERROR, statusCode.VOTE_VOTE_RESULT_DB_ERROR));
     } else {
         try {
             //투표 결과 json 파일로 저장
@@ -107,7 +107,7 @@ cron.schedule('* * * * Monday', async () => {
     let updateDateQuery = 'UPDATE summary SET start_date = ?, end_date = ? WHERE start_date = null AND end_date = null';
 
     let moveVoteTableResult = await db.queryParam_None(moveVoteTableQuery);
-    if (moveVoteTableResult) {
+    if (!moveVoteTableResult) {
     } else {
         let lastWeek = moment().add(-7, 'days').format('YYYY-MM-DD');
         let today = moment().format('YYYY-MM-DD');
