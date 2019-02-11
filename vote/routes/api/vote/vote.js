@@ -44,14 +44,40 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
 });
 
 //투표권 지급
-router.put('/ballot', authUtil.isLoggedin, (req, res) => {
-    var updateBallotQuery = 'UPDATE vote SET ballot = ballot + 5, update_date = ?, sequence = sequence + 1 WHERE idx = ?';
-    let updateBallotResult = await db.queryParam_Arr(updateBallotQuery, [moment().format('YYYY-MM-DD hh:mm:ss'), req.decoded.idx]);
+router.put('/ballot', authUtil.isLoggedin, async (req, res) => {
+    var today = moment();
+    var lastDate = moment().endOf('month').date();
+
+    var selectBallotQuery = 'SELECT * FROM vote WHERE idx = ?';
+
+    let selectBallotResult = await db.queryParam_Arr(selectBallotQuery, [req.decoded.idx]);
+    var userBallot = selectBallotResult[0];
+
+    if (!selectBallotResult) {
+        res.status(200).send(authUtil.successFalse(null, responseMessage.USER_BALLOT_SELECT_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
+    } else {
+        let diff = Math.floor(today.diff(userBallot.update_date) / (1000*60*60*24));
+        if (diff == 1) {
+            if (userBallot.sequence == 7) {
+                userBallot.ballot += 10;
+            } else if (userBallot.sequence == lastDate) {
+                userBallot.ballot += 20;
+                userBallot.sequence = 0;
+            } else {
+                userBallot.ballot += 5;
+            }
+            userBallot.sequence += 1;
+        } else {
+            userBallot.sequence = 1;
+        }
+    }
+    var updateBallotQuery = 'UPDATE vote SET ballot = ?, update_date = ?, sequence = ? WHERE idx = ?';
+    let updateBallotResult = await db.queryParam_Arr(updateBallotQuery, [userBallot.ballot, today, userBallot.sequence, req.decoded.idx]);
 
     if (!updateBallotResult) {
         res.status(200).send(authUtil.successFalse(null, responseMessage.USER_BALLOT_INCRESE_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
     } else {
-        res.status(200).send(authUtil.responseMessage.USER_BALLOT_SUCCESS, statusCode.VOTE_OK);
+        res.status(200).send(authUtil.responseMessage.USER_BALLOT_SUCCESS, userBallot.sequence);
     }
 });
 

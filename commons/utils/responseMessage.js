@@ -17,6 +17,8 @@ module.exports = {
 
     DB_ERROR: "데이터베이스 에러",
     LEGI_VOTE_ERROR: "의원 투표 데이터베이스 에러",
+
+    USER_BALLOT_SELECT_ERROR: "투표 조회 에러",
     USER_BALLOT_INCRESE_ERROR: "투표권 증가 에러",
     USER_BALLOT_DECRESE_ERROR: "투표권 감소 에러",
     USER_BALLOT_AMOUNT_LACK: "투표권 보유량 부족",
