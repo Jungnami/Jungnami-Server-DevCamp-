@@ -1,0 +1,11 @@
+# config
+config/
+
+# Dependency directories
+node_modules/
+
+# views
+views/
+
+# modules
+module/
