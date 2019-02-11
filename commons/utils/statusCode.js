@@ -23,6 +23,8 @@ module.exports = {
     AUTH_DB_ERROR: 1600,
 
     //PMS = 2000
+
+    //CMS = 300
     
 
     //VOTE = 4000
