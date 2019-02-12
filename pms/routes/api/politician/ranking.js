@@ -13,7 +13,6 @@ router.get('/party/:party_cd/:vote', async(req, res, next) => {
     const party_cd = parseInt(req.params.party_cd);
     if(req.params.vote == 'like'){
         selectParty += 'ORDER BY v.like_cnt DESC';
-        console.log(selectParty)
         selectPartyResult = await db.queryParam_Arr(selectParty, party_cd);
     
         if(!selectPartyResult) {
