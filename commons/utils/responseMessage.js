@@ -15,6 +15,14 @@ module.exports = {
     LOGIN_SUCCESS: "로그인 성공",
     LOGIN_FAIL: "로그인 실패",
 
+    LIST_SUCCESS: "리스트 조회 성공",
+    LEGISLATOR_SUCCESS: "국회의원 정보 조회 성공",
+    LEGISLATOR_DB_INSERT: "국회의원 정보 입력 성공",
+    LEGISLATOR_DETAIL_SUCCESS: "국회의원 상세 정보 조회 성공",
+
+    PMS_ADMIN_LOAD_SUCCESS: "PMS ADMIN PAGE 로드 성공",
+    PMS_ADMIN_SEARCH_SUCCESS: "PMS ADMIN PAGE 국회의원 정보 조회 성공",
+
     DB_ERROR: "데이터베이스 에러",
     LEGI_VOTE_ERROR: "의원 투표 데이터베이스 에러",
     USER_BALLOT_INCRESE_ERROR: "투표권 감소 에러",
