@@ -40,4 +40,15 @@ module.exports = {
 
     READ_SUMMARY: "과거 투표 결과 조회 성공",
     SUMMARY_READ_ERROR: "과거 투표 결과 조회 에러",
+
+
+    NO_AUTHORITY: "수정/삭제 권한이 없습니다(작성자가 아닙니다)",
+    REPLY_OK: "댓글 작성 성공",
+    REPLY_READ:"댓글 읽기 성공",
+    REPLY_READ_ERROR: "댓글 읽기 에러",
+    REPLY_DB_INSERT_ERROR: "댓글 작성 에러",
+    REPLY_DB_UPDATE_ERROR: "댓글 수정 에러",
+    REPLY_DB_DELETE_ERROR: "댓글 삭제 에러",
+
+    USER_POINT_INCRESE_ERROR: "유저 포인트 증가 에러",
 };
