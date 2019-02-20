@@ -14,6 +14,7 @@ module/
 # Created by https://www.gitignore.io/api/node,macos,python,pycharm,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=node,macos,python,pycharm,visualstudiocode
 
+/secretModule
 ### macOS ###
 # General
 .DS_Store
@@ -291,14 +292,6 @@ celerybeat-schedule
 
 # SageMath parsed files
 *.sage.py
-
-# Environments
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
 
 # Spyder project settings
 .spyderproject
