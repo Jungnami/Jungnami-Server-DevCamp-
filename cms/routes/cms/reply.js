@@ -87,4 +87,34 @@ router.delete("/:reply_idx", authUtil.isLoggedin, async(req, res) => {
     
 });
 
+router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res) => {
+    var checkNotifyQuery = 'SELECT * FROM notify WHERE idx = ?';
+    let checkNotifyResult = await db.queryParam_Arr(checkNotifyQuery, [req.decoded.idx]);
+
+    if (!checkNotifyResult) {
+
+    } else {
+        let Transaction = await db.Transaction(async (connection) => {
+            var notifyQuery = 'INSERT INTO notify VALUES (?, ?, ?, ?)';
+            let notifyResult = await connection.query(notifyQuery, [req.decoded.idx, req.params.reply_idx, moment().format('YYYY-MM-DD hh:mm:ss'), req.body.reason]);
+            if (!notifyResult) {
+                res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYDBERROR, statusCode.REPLYNOTIFYDBERROR));
+            }
+
+            var increseNotifyQuery = 'UPDATE membership SET cumulativenotify = cumulativenotify + 1 WHERE idx = ?';
+            let increseNotifyResult = await connection.query(increseNotifyQuery, [req.decoded.idx]);
+            if (!increseNotifyResult) {
+                res.status(200).send(authUtil.successFalse(null, responseMessage.USERNOTIFYCOUNTERROR, statusCode.USERNOTIFYCOUNTERROR));
+            }
+        });
+
+        if (!Transaction) {                
+            res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYTRANJECTIONERROR, statusCode.REPLYNOTIFYDBERROR));
+        } else {
+            res.status(200).send(authUtil.successTrue(responseMessage.REPLYNOTIFYOK, NULL));
+        }
+    } 
+});
+
+
 module.exports = router;
