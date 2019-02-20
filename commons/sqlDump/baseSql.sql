@@ -14,6 +14,7 @@ CREATE TABLE membership
     `refresh_token`  TEXT           NOT NULL    COMMENT '통신 토큰 재발급용 토큰', 
     `access_date`    DATETIME       NOT NULL, 
     `regist_date`    DATETIME       NOT NULL, 
+    `cumulative_notify`    INT       NOT NULL, 
     PRIMARY KEY (idx)
 );
 
@@ -92,3 +93,62 @@ ALTER TABLE vote_result ADD CONSTRAINT FK_vote_result_idx_legislator_idx FOREIGN
 
 ALTER TABLE summary ADD CONSTRAINT FK_summary_code_legislator_legi_cd FOREIGN KEY (code)
  REFERENCES legislator (legi_cd)  ON DELETE CASCADE ON UPDATE CASCADE;
+
+ CREATE TABLE article
+(
+    `id`               INT             NOT NULL    AUTO_INCREMENT COMMENT '기사 인덱스', 
+    `title`            VARCHAR(300)    NOT NULL    COMMENT '제목', 
+    `office`           VARCHAR(45)     NULL        COMMENT '언론사', 
+    `article_content`  VARCHAR(300)    NULL        COMMENT '기사 내용', 
+    `link`             VARCHAR(300)    NOT NULL    COMMENT '기사 링크', 
+    `thumb_img`        VARCHAR(300)    NULL        COMMENT '썸네일 이미지', 
+    `main_img`         VARCHAR(300)    NULL        COMMENT '기사 안 메인 이미지', 
+    `registe_date`     DATETIME        NOT NULL    COMMENT '등록 날짜', 
+    `update_date`      DATETIME        NOT NULL    COMMENT '업데이트 날짜', 
+    `ranking`          INT             NOT NULL    COMMENT '랭킹(1~30)', 
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE reply
+(
+    `idx`         INT         NOT NULL    AUTO_INCREMENT, 
+    `article_id`  INT         NOT NULL    COMMENT '기사 인덱스', 
+    `writer`      INT         NOT NULL    COMMENT '댓글 작성자', 
+    `content`     TEXT        NOT NULL    COMMENT '댓글 내용', 
+    `writetime`   DATETIME    NOT NULL    COMMENT '댓글 작성 시간', 
+    `parent`      INT         NULL        COMMENT '대댓글한 댓글 인덱스', 
+    `depth`       INT         NULL        COMMENT '대댓글 순서', 
+    PRIMARY KEY (idx)
+);
+
+ALTER TABLE reply ADD CONSTRAINT FK_reply_article_id_article_id FOREIGN KEY (article_id)
+ REFERENCES article (id)  ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ CREATE TABLE reply_like
+(
+    `idx`        INT        NOT NULL    AUTO_INCREMENT, 
+    `reply_idx`  INT        NOT NULL    COMMENT '댓글 인덱스', 
+    `like_flag`  TINYINT    NOT NULL    COMMENT '좋아요(1), 싫어요(0)', 
+    `user_idx`   INT        NOT NULL    COMMENT '유저 인덱스', 
+    PRIMARY KEY (idx)
+);
+
+ALTER TABLE reply_like ADD CONSTRAINT FK_reply_like_reply_idx_reply_idx FOREIGN KEY (reply_idx)
+ REFERENCES reply (idx)  ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE reply_like ADD CONSTRAINT FK_reply_like_user_idx_membership_idx FOREIGN KEY (user_idx)
+ REFERENCES membership (idx)  ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ CREATE TABLE notify
+(
+    `idx`        INT         NOT NULL    AUTO_INCREMENT, 
+    `user_idx`   INT         NOT NULL    COMMENT '유저 인덱스', 
+    `reply_idx`  INT         NOT NULL    COMMENT '댓글 인덱스', 
+    `timestamp`  DATETIME    NOT NULL    COMMENT '신고한 시간', 
+    `reason`     TEXT        NULL        COMMENT '신고 이유', 
+    PRIMARY KEY (idx)
+);
+
+ALTER TABLE notify ADD CONSTRAINT FK_notify_reply_idx_reply_idx FOREIGN KEY (reply_idx)
+ REFERENCES reply (idx)  ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE notify ADD CONSTRAINT FK_notify_user_idx_membership_idx FOREIGN KEY (user_idx)
+ REFERENCES membership (idx)  ON DELETE RESTRICT ON UPDATE RESTRICT;

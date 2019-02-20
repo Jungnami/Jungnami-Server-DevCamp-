@@ -68,4 +68,9 @@ module.exports = {
     REPLY_LIKE_LIKE_ERROR: "좋아요 삽입 에러",
     REPLY_LIKE_DISLIKE_ERROR: "싫어요 삽입 에러",
     REPLY_LIKE_CANCEL_ERROR: "좋아요/싫어요 삽입 에러",
+
+    REPLY_NOTIFY_OK: "신고하기 성공",
+    REPLY_NOTIFY_DB_ERROR: "신고하기 DB 에러",
+    USER_NOTIFY_COUNT_ERROR: "신고수 증가 에러",
+    REPLY_NOTIFY_TRANJECTION_ERROR: "신고하기 트렌젝션 에러",
 };
