@@ -23,7 +23,6 @@ module.exports = {
     AUTH_DB_ERROR: 1600,
 
     //PMS = 2000
-<<<<<<< HEAD
     PMS_OK: 2200,
     PMS_CREATED: 2201,
     PMS_UPDATE_SUCCESS: 2202,
@@ -35,11 +34,9 @@ module.exports = {
     PMS_INTERNAL_SERVER_ERROR: 2500,
     PMS_SERVICE_UNAVAILABLE: 2503,
     PMS_DB_ERROR: 600,    
-=======
 
     //CMS = 300
     
->>>>>>> 6d54021ae03e3f29dd115e2c5e4c4718615a4b7a
 
     //VOTE = 4000
     VOTE_OK: 4200,
