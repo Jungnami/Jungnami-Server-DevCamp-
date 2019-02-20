@@ -10,6 +10,8 @@ views/
 # modules
 module/
 
+secretModule/
+
 
 # Created by https://www.gitignore.io/api/node,macos,python,pycharm,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=node,macos,python,pycharm,visualstudiocode
@@ -293,6 +295,7 @@ celerybeat-schedule
 # SageMath parsed files
 *.sage.py
 
+
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -311,8 +314,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-### Python Patch ###
-.venv/
 
 ### VisualStudioCode ###
 .vscode/*
