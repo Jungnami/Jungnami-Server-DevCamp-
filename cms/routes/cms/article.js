@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-router.use('/admin', require('./admin'));
+//5분마다 기사 크롤링
+cron.schedule('*/5 * * * *', async () => {
+    
+});
 
 module.exports = router;
