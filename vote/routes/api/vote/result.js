@@ -92,9 +92,9 @@ cron.schedule('*/5 * * * *', async () => {
     let timeStamp = moment().format('YYYY-MM-DD hh:mm:ss');
     console.log("투표 결과 갱신: " + timeStamp);
 
-    var getAllLikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.profile_img, vr.like_cnt AS vote_cnt ' +
+    var getAllLikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.city_cd, legi.profile_img, vr.like_cnt AS vote_cnt ' +
         'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.like_cnt DESC';
-    var getAllDislikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.profile_img, vr.dislike_cnt AS vote_cnt ' +
+    var getAllDislikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.city_cd, legi.profile_img, vr.dislike_cnt AS vote_cnt ' +
         'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.dislike_cnt DESC';
 
     let getAllLikeResult = await db.queryParam_None(getAllLikeQuery);

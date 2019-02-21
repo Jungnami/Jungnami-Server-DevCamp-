@@ -39,15 +39,15 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
     let insertRepResult = await db.queryParam_Arr(insertRepQuery, [articleIdx, writer, content, writeTime]);
 
     if (!insertRepResult) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.REPLY_DB_INSERT_ERROR, statusCode.REPLY_DB_ERROR));
+        res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_INSERT_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
         var updatePointQuery = 'UPDATE membership SET point = point + 1 WHERE idx = ?';
         let updatePointResult = await db.queryParam_Arr(updatePointQuery, [req.decoded.idx]);
 
         if (!updatePointResult) {
-            res.status(200).send(authUtil.successFalse(null, responseMessage.USER_POINT_INCRESE_ERROR, statusCode.REPLY_USER_POINT_DB_ERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.USER_POINT_INCRESE_ERROR, statusCode.REPLY_USER_POINT_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK, null));
+            res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK));
         }
     }
 });
@@ -67,7 +67,7 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
         if (!updateRepResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK, null));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
         }
     }
 
@@ -104,20 +104,20 @@ router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res) => {
             var notifyQuery = 'INSERT INTO notify VALUES (?, ?, ?, ?)';
             let notifyResult = await connection.query(notifyQuery, [req.decoded.idx, req.params.reply_idx, moment().format('YYYY-MM-DD hh:mm:ss'), req.body.reason]);
             if (!notifyResult) {
-                res.status(200).send(authUtil.successFalse(null, responseMessage.REPLY_NOTIFY_DB_ERROR, statusCode.REPLY_NOTIFY_DB_ERROR));
+                res.status(200).send(authUtil.successFalse(responseMessage.REPLY_NOTIFY_DB_ERROR, statusCode.REPLY_NOTIFY_DB_ERROR));
             }
 
             var increseNotifyQuery = 'UPDATE membership SET cumulative_notify = cumulative_notify + 1 WHERE idx = ?';
             let increseNotifyResult = await connection.query(increseNotifyQuery, [req.decoded.idx]);
             if (!increseNotifyResult) {
-                res.status(200).send(authUtil.successFalse(null, responseMessage.USER_NOTIFY_COUNT_ERROR, statusCode.USER_NOTIFY_COUNT_ERROR));
+                res.status(200).send(authUtil.successFalse(responseMessage.USER_NOTIFY_COUNT_ERROR, statusCode.USER_NOTIFY_COUNT_ERROR));
             }
         });
 
         if (!Transaction) {                
-            res.status(200).send(authUtil.successFalse(null, responseMessage.REPLY_NOTIFY_TRANJECTION_ERROR, statusCode.REPLY_NOTIFY_DB_ERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.REPLY_NOTIFY_TRANJECTION_ERROR, statusCode.REPLY_NOTIFY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(responseMessage.REPLY_NOTIFY_OK, NULL));
+            res.status(200).send(authUtil.successTrue(statsCode.REPLY_OK, responseMessage.REPLY_NOTIFY_OK));
         }
     } 
 });
