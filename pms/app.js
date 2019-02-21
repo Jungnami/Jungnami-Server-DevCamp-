@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+// const vue = require('connect-history-api-fallback');
+const csp = require('express-csp-header');
 
 const indexRouter = require('./routes/index');
 
@@ -13,11 +15,37 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('port', process.env.PORT || 3200);
 
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
+// app.use(require('connect-history-api-fallback')());
+// app.use(vue);
+
+app.use(csp({
+  policies: {
+      'default-src': [csp.SELF],
+      'script-src': [csp.SELF, csp.INLINE, 'http://localhost:3200'],
+      'style-src': [csp.SELF, 'http://localhost:3200'],
+      'img-src': ['data:', 'http://localhost:3200'],
+      'worker-src': [csp.NONE],
+      'block-all-mixed-content': true
+  }
+}));
+
+// app.use((req, res, next) => {
+//   res.append('Access-Control-Allow-Origin', ['*']);
+//   res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+//   res.append('Access-Control-Allow-Headers', 'Content-Type');
+//   next();
+// });
+
+// app.use(function(req, res, next) {
+//   res.setHeader("Content-Security-Policy", "default-src 'self' http://localhost");
+//  next();
+// });
 
 app.use('/', indexRouter);
 

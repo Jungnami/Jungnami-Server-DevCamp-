@@ -1,36 +1,44 @@
 const express = require('express');
 const db = require('../../../module/pool');
-const statusCode = require('../../../module/utils/statusCode');
+const statusCode = require('../../../../commons/utils/statusCode');
 const responseMessage = require('../../../../commons/utils/responseMessage');
-const pmsUtil = require('../../../../commons/utils/pmsUtil');
-const path = require('path')
+const authUtil = require('../../../../commons/utils/authUtil');
 
 const router = express.Router();
 
 //국회의원 상세 정보 조회
 router.get('/:idx', async(req, res, next) => {
-    const selectLegiQuery = 'SELECT * FROM legislator WHERE idx=?';
+    const selectLegiQuery = 'SELECT legi_name, party_name, region, ordinal, profile_img, reelection, crime, sns, phone FROM legislator WHERE idx=?';
     const selectLegiResult = await db.queryParam_Arr(selectLegiQuery, req.params.idx);
 
     if(!selectLegiResult) {
-        res.status(statusCode.OK).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
+        res.status(statusCode.OK).send(authUtil.successFalse(responseMessage.DB_ERROR, statusCode.DB_ERROR));
     } else {
-        res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.LEGISLATOR_DETAIL_SUCCESS,selectLegiResult));
+        res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_DETAIL_LOAD_SUCCESS, responseMessage.LEGISLATOR_DETAIL_SUCCESS,selectLegiResult));
     }
 })
 
-//국회의원 상세 정보 수정
-//patch에 body 입력 가능?? 
-router.put('/update/:legi_cd', async(req, res, next) => {
-    let updateLegiQuery = 'UPDATE legislator SET ?=? WHERE legi_cd=?';
-    let arr = new Array
-    let updateLegiResult = await db.queryParam_Arr(updateLegiQuery, 'crime', req.body.crime, req.params.legi_cd);
-    console.log(updateLegiResult)
+//국회의원 상세 정보 수정    
+router.put('/update/:idx', async(req, res, next) => {
+    let updateLegiQuery = 'UPDATE legislator SET legi_name=?, party_name=?, region=?, ordinal=?, profile_img=?, reelection=?, crime=?, sns=?, phone=? WHERE idx=?';
+    //  ?=? WHERE idx=?';
+    const option = Object.keys(req.body);
+    // const value = new Array();
+    const query = new Array();
 
+    for (let i in option){
+        // query[i] = new Array();
+        query.push(req.body[option[i]]);
+    }
+    query.push(req.params.idx);
+    console.log(query)
+
+    let updateLegiResult = await db.queryParam_Parse(updateLegiQuery, query);
+    console.log(updateLegiResult)
     if(!updateLegiResult){
-        res.status(statusCode.OK).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
+        res.status(statusCode.OK).send(authUtil.successFalse(responseMessage.DB_ERROR, statusCode.DB_ERROR));
     } else {
-        res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.PMS_ADMIN_UPDATE_SUCCESS));
+        res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_UPDATE_SUCCESS, responseMessage.PMS_ADMIN_UPDATE_SUCCESS));
     }
 })
 

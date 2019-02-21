@@ -22,10 +22,12 @@ module.exports = {
 
     PMS_ADMIN_LOAD_SUCCESS: "PMS ADMIN PAGE 로드 성공",
     PMS_ADMIN_SEARCH_SUCCESS: "PMS ADMIN PAGE 국회의원 정보 조회 성공",
+    PMS_ADMIN_UPDATE_SUCCESS: "PMS ADMIN PAGE 국회의원 정보 업데이트 성공",
 
     DB_ERROR: "데이터베이스 에러",
     LEGI_VOTE_ERROR: "의원 투표 데이터베이스 에러",
 
+    USER_BALLOT_SELECT_SUCCESS: "투표 조회 성공",
     USER_BALLOT_SELECT_ERROR: "투표 조회 에러",
     USER_BALLOT_INCRESE_ERROR: "투표권 증가 에러",
     USER_BALLOT_DECRESE_ERROR: "투표권 감소 에러",
@@ -68,4 +70,9 @@ module.exports = {
     REPLY_LIKE_LIKE_ERROR: "좋아요 삽입 에러",
     REPLY_LIKE_DISLIKE_ERROR: "싫어요 삽입 에러",
     REPLY_LIKE_CANCEL_ERROR: "좋아요/싫어요 삽입 에러",
+
+    REPLYNOTIFYOK: "신고하기 성공",
+    REPLYNOTIFYDB_ERROR: "신고하기 DB 에러",
+    USERNOTIFYCOUNT_ERROR: "신고수 증가 에러",
+    REPLYNOTIFYTRANJECTION_ERROR: "신고하기 트렌젝션 에러",
 };

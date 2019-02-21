@@ -24,9 +24,11 @@ module.exports = {
             ordinal = ordinal.substr(3, 2);
             ordinal = parseInt(ordinal);
             phone = JSON.stringify(item.assemTel).replace(/['"]+/g, '');
-            console.log(phone)
         } catch (e) {
-            // console.log(e);
+            // party_name = JSON.stringify(item.polyNm).replace(/['"]+/g, ''); 
+            // ordinal = JSON.stringify(item.reeleGbnNm).replace(/['"]+/g, '')
+            // ordinal = ordinal.substr(3, 2);
+            // ordinal = parseInt(ordinal);
         } finally {
             result.push(party_name, ordinal, phone);
             return result;
