@@ -1,20 +1,20 @@
 const express = require('express');
 const db = require('../../../module/pool');
-const statusCode = require('../../../module/utils/statusCode');
+const statusCode = require('../../../../commons/utils/statusCode');
 const responseMessage = require('../../../../commons/utils/responseMessage');
-const pmsUtil = require('../../../../commons/utils/pmsUtil');
+const authUtil = require('../../../../commons/utils/authUtil');
 
 const router = express.Router();
 
 //국회의원 상세 정보 조회
 router.get('/:idx', async(req, res, next) => {
-    const selectLegiQuery = 'SELECT * FROM legislator WHERE idx=?';
+    const selectLegiQuery = 'SELECT legi_name, party_name, region, ordinal, profile_img, reelection, crime, sns, phone FROM legislator WHERE idx=?';
     const selectLegiResult = await db.queryParam_Arr(selectLegiQuery, req.params.idx);
 
     if(!selectLegiResult) {
-        res.status(statusCode.OK).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
+        res.status(statusCode.OK).send(authUtil.successFalse(responseMessage.DB_ERROR, statusCode.DB_ERROR));
     } else {
-        res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.LEGISLATOR_DETAIL_SUCCESS,selectLegiResult));
+        res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_DETAIL_LOAD_SUCCESS, responseMessage.LEGISLATOR_DETAIL_SUCCESS,selectLegiResult));
     }
 })
 
@@ -36,9 +36,9 @@ router.put('/update/:idx', async(req, res, next) => {
     let updateLegiResult = await db.queryParam_Parse(updateLegiQuery, query);
     console.log(updateLegiResult)
     if(!updateLegiResult){
-        res.status(statusCode.OK).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
+        res.status(statusCode.OK).send(authUtil.successFalse(responseMessage.DB_ERROR, statusCode.DB_ERROR));
     } else {
-        res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.PMS_ADMIN_UPDATE_SUCCESS));
+        res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_UPDATE_SUCCESS, responseMessage.PMS_ADMIN_UPDATE_SUCCESS));
     }
 })
 

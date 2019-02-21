@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../../../module/pool');
-const statusCode = require('../../../module/utils/statusCode');
+const statusCode = require('../../../../commons/utils/statusCode');
 const responseMessage = require('../../../../commons/utils/responseMessage');
 const pmsUtil = require('../../../../commons/utils/pmsUtil');
 const path = require('path')
@@ -27,9 +27,9 @@ router.get('/', async(req, res, next) => {
     resultArr.push(selectPartyResult, selectCityResult, selectOrdinalResult);
 
     if(!selectPartyResult) {
-        res.status(statusCode.OK).send(pmsUtil.successFalse('null', responseMessage.DB_ERROR, statusCode.DB_ERROR));
+        res.status(statusCode.OK).send(pmsUtil.successFalse(responseMessage.DB_ERROR, statusCode.DB_ERROR));
     } else {
-        res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.PMS_ADMIN_LOAD_SUCCESS, resultArr));
+        res.status(statusCode.OK).send(pmsUtil.successTrue(statusCode.PMS_ADMIN_OK, responseMessage.PMS_ADMIN_LOAD_SUCCESS, resultArr));
     }
 });
 
@@ -72,9 +72,9 @@ router.post('/search', async(req, res, next) => {
         }
     }
     if(!selectLegiResult) {
-        res.status(statusCode.OK).send(pmsUtil.successFalse('null', responseMessage.DB_ERROR, statusCode.DB_ERROR));
+        res.status(statusCode.OK).send(pmsUtil.successFalse(responseMessage.DB_ERROR, statusCode.DB_ERROR));
     } else {
-        res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.PMS_ADMIN_SEARCH_SUCCESS, selectLegiResult))
+        res.status(statusCode.OK).send(pmsUtil.successTrue(statusCode.PMS_ADMIN_SEARCH_SUCCESS, responseMessage.PMS_ADMIN_SEARCH_SUCCESS, selectLegiResult))
     }
 })
 
