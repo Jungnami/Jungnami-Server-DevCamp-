@@ -14,7 +14,7 @@ router.get('/naver/callback', async (req, res) => {
     passport.authenticate('naver', {
         failureRedirect: '/'
     }), (req, res) => {
-        res.status(200).send(authUtil.successTrue(req.session.passport.token, responseMessage.LOGIN_SUCCESS));
+        res.status(200).send(authUtil.successTrue(statusCode.AUTH_OK, responseMessage.LOGIN_SUCCESS, req.session.passport.token));
     }
 });
 
@@ -28,11 +28,11 @@ router.get('/kakao/callback', passport.authenticate('kakao', {
 }));
 
 router.get('/fail', async (req, res) => {
-    res.status(200).send(authUtil.successFalse(null, responseMessage.LOGIN_FAIL, statusCode.INTERNAL_SERVER_ERROR));
+    res.status(200).send(authUtil.successFalse(responseMessage.LOGIN_FAIL, statusCode.INTERNAL_SERVER_ERROR));
 });
 
 router.get('/success', async (req, res) => {
-    res.status(200).send(authUtil.successTrue(responseMessage.LOGIN_SUCCESS, req._passport.session.user));
+    res.status(200).send(authUtil.successTrue(statusCode.AUTH_OK, responseMessage.LOGIN_SUCCESS, req._passport.session.user));
 });
 
 module.exports = router;

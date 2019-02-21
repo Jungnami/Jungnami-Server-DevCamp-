@@ -16,7 +16,7 @@ router.get('/:isLike', async (req, res) => {
 
     redisClient.hgetall('voteResult', (err, obj) => {
         if (err) {
-            res.status(200).send(authUtil.successFalse(err, responseMessage.REDIS_VOTE_RESULT_READ_ERROR, statusCode.VOTE_VOTE_RESULT_REDIS_ERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.REDIS_VOTE_RESULT_READ_ERROR, statusCode.VOTE_VOTE_RESULT_REDIS_ERROR));
         } else {
             let result = {
                 'timeStamp': obj.timeStamp
@@ -28,9 +28,9 @@ router.get('/:isLike', async (req, res) => {
                     result.data = JSON.parse(voteFileSys.readFileSync('allDislikeResult.txt', 'UTF-8'));
                 }
 
-                res.status(200).send(authUtil.successTrue(responseMessage.READ_VOTE_RESULT, result));
+                res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_VOTE_RESULT, result));
             } catch (readFileSysError) {
-                res.status(200).send(authUtil.successFalse(readFileSysError, responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
+                res.status(200).send(authUtil.successFalse(responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
             }
         }
     });
@@ -65,9 +65,9 @@ router.get('/past/:isLike/:date', async (req, res) => {
     let getPastSummaryResult = await db.queryParam_Arr(getPastSummaryQuery, [pastDate]);
 
     if (!getPastSummaryResult) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.SUMMARY_READ_ERROR, statusCode.VOTE_SUMMARY_DB_ERROR));
+        res.status(200).send(authUtil.successFalse(responseMessage.SUMMARY_READ_ERROR, statusCode.VOTE_SUMMARY_DB_ERROR));
     } else {
-        res.status(200).send(authUtil.successTrue(responseMessage.READ_SUMMARY, getPastSummaryResult));
+        res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_SUMMARY, getPastSummaryResult));
     }
 });
 

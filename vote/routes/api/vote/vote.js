@@ -17,9 +17,9 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
     let checkBallotNumResult = await db.queryParam_Arr(checkBallotNumQuery, [req.decoded.idx]);
 
     if (!checkBallotNumResult) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.VOTE_VOTE_DB_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
+        res.status(200).send(authUtil.successFalse(responseMessage.VOTE_VOTE_DB_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
     } else if (checkBallotNumResult[0].ballot == 0) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.USER_BALLOT_AMOUNT_LACK, statusCode.VOTE_BAD_REQUEST));
+        res.status(200).send(authUtil.successFalse(responseMessage.USER_BALLOT_AMOUNT_LACK, statusCode.VOTE_BAD_REQUEST));
     } else {
         if (isLike) {
             insertLegiVoteQuery = 'INSERT INTO vote_result (idx, like_cnt, dislike_cnt) VALUES (?, ?, dislike_cnt) ON DUPLICATE KEY UPDATE like_cnt = like_cnt + 1';
@@ -29,15 +29,15 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
         let insertLegiVoteResult = await db.queryParam_Arr(insertLegiVoteQuery, [legiCd, 1]);
 
         if (!insertLegiVoteResult) {
-            res.status(200).send(authUtil.successFalse(null, responseMessage.LEGI_VOTE_ERROR, statusCode.VOTE_VOTE_RESULT_DB_ERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.LEGI_VOTE_ERROR, statusCode.VOTE_VOTE_RESULT_DB_ERROR));
         } else {
             let takeBallotQuery = 'UPDATE vote SET ballot = ballot - 1 WHERE user_idx = ?';
             let takeBallotResult = await db.queryParam_Arr(takeBallotQuery, [req.decoded.idx]);
 
             if (!takeBallotResult) {
-                res.status(200).send(authUtil.successFalse(null, responseMessage.USER_BALLOT_DECRESE_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
+                res.status(200).send(authUtil.successFalse(responseMessage.USER_BALLOT_DECRESE_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
             } else {
-                res.status(200).send(authUtil.successTrue(responseMessage.USER_VOTE_SUCCESS));
+                res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.USER_VOTE_SUCCESS, null));
             }
         }
     }
@@ -54,7 +54,7 @@ router.put('/ballot', authUtil.isLoggedin, async (req, res) => {
     var userBallot = selectBallotResult[0];
 
     if (!selectBallotResult) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.USER_BALLOT_SELECT_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
+        res.status(200).send(authUtil.successFalse(responseMessage.USER_BALLOT_SELECT_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
     } else {
         let diff = Math.floor(today.diff(userBallot.update_date) / (1000*60*60*24));
         if (diff == 1) {
@@ -75,9 +75,9 @@ router.put('/ballot', authUtil.isLoggedin, async (req, res) => {
     let updateBallotResult = await db.queryParam_Arr(updateBallotQuery, [userBallot.ballot, today, userBallot.sequence, req.decoded.idx]);
 
     if (!updateBallotResult) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.USER_BALLOT_INCRESE_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
+        res.status(200).send(authUtil.successFalse(responseMessage.USER_BALLOT_INCRESE_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
     } else {
-        res.status(200).send(authUtil.responseMessage.USER_BALLOT_SUCCESS, userBallot.sequence);
+        res.status(200).send(statusCode.VOTE_OK, authUtil.responseMessage.USER_BALLOT_SUCCESS, userBallot.sequence);
     }
 });
 

@@ -15,20 +15,20 @@ router.post('/', async (req, res) => {
     let expToken = req.body.expToken;
 
     if (!refreshToken) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.EMPTY_REFRESH_TOKEN, statusCode.AUTH_BAD_REQUEST));
+        res.status(200).send(authUtil.successFalse(responseMessage.EMPTY_REFRESH_TOKEN, statusCode.AUTH_BAD_REQUEST));
     } else {
         var findUserByRefreshQuery = "SELECT idx, id, grade FROM membership WHERE refresh_token = ?";
         let findUserByRefreshResult = await db.queryParam_Arr(findUserByRefreshQuery, [refreshToken]);
 
         console.log(findUserByRefreshResult);
         if (!findUserByRefreshResult || findUserByRefreshResult.length == 0) {
-            res.status(200).send(authUtil.successFalse(null, responseMessage.NOT_FOUND_USER, statusCode.AUTH_DB_ERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.NOT_FOUND_USER, statusCode.AUTH_DB_ERROR));
         } else {
             const newToken = jwt.sign(findUserByRefreshResult[0]);
             //TODO redis에 값 수정
             redisClient.del(expToken);
             redisClient.hmset(newToken, 'access_date', moment().format('YYYY-MM-DD hh:mm:ss'));
-            res.status(200).send(authUtil.successTrue(responseMessage.REFRESH_TOKEN, newToken));
+            res.status(200).send(authUtil.successTrue(statusCode.AUTH_OK, responseMessage.REFRESH_TOKEN, newToken));
         
         }
     }
