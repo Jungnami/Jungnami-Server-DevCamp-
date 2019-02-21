@@ -5,8 +5,9 @@ const responseMessage = require('./responseMessage');
 const statusCode = require('./statusCode');
 
 const authUtil = {
-    successTrue: (message, data) => {
+    successTrue: (status, message, data) => {
         return {
+            status : status,
             success: true,
             message: message,
             error: null,
