@@ -88,7 +88,7 @@ router.get('/past/:isLike/:date', async (req, res) => {
 });
 
 //5분마다 투표 결과 갱신
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/5 * * * *', async () => {
     let timeStamp = moment().format('YYYY-MM-DD hh:mm:ss');
     console.log("투표 결과 갱신: " + timeStamp);
 
