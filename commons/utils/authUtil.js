@@ -1,6 +1,5 @@
 var jwt = require('../../auth/module/jwt');
 const client = require('../../auth/module/redis');
-const moment = require('moment');
 
 const responseMessage = require('./responseMessage');
 const statusCode = require('./statusCode');

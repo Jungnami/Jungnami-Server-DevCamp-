@@ -49,4 +49,29 @@ module.exports = {
 
     READ_SUMMARY: "과거 투표 결과 조회 성공",
     SUMMARY_READ_ERROR: "과거 투표 결과 조회 에러",
+
+
+    NO_AUTHORITY: "수정/삭제 권한이 없습니다(작성자가 아닙니다)",
+    REPLY_OK: "댓글 작성 성공",
+    REPLY_READ:"댓글 읽기 성공",
+    REPLY_READ_ERROR: "댓글 읽기 에러",
+    REPLY_DB_INSERT_ERROR: "댓글 작성 에러",
+    REPLY_DB_UPDATE_ERROR: "댓글 수정 에러",
+    REPLY_DB_DELETE_ERROR: "댓글 삭제 에러",
+
+    USER_POINT_INCRESE_ERROR: "유저 포인트 증가 에러",
+
+    REPLY_LIKE_OK: "좋아요/싫어요 성공",
+    REPLY_LIKE_CANCEL_OK: "좋아요/싫어요 취소 성공",
+    REPLY_LIKE_ALREADY: "이미 좋아요 되어있습니다",
+    REPLY_DISLIKE_ALREADY: "이미 싫어요 되어있습니다",
+    REPLY_LIKE_READ_ERROR: "좋아요 읽기 에러",
+    REPLY_LIKE_LIKE_ERROR: "좋아요 삽입 에러",
+    REPLY_LIKE_DISLIKE_ERROR: "싫어요 삽입 에러",
+    REPLY_LIKE_CANCEL_ERROR: "좋아요/싫어요 삽입 에러",
+
+    REPLYNOTIFYOK: "신고하기 성공",
+    REPLYNOTIFYDB_ERROR: "신고하기 DB 에러",
+    USERNOTIFYCOUNT_ERROR: "신고수 증가 에러",
+    REPLYNOTIFYTRANJECTION_ERROR: "신고하기 트렌젝션 에러",
 };
