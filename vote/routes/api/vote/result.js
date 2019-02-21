@@ -37,14 +37,29 @@ router.get('/:isLike', async (req, res) => {
 });
 
 //과거 투표 기록 보기
-router.get('/past', async (req, res) => {
+router.get('/past/:isLike', async (req, res) => {
     //TODO 추후 최신 과거 결과는 저장해놓은거 파싱해서 사용하기
-    var getPastLikeSummary = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, s.like_cnt ' +
+    var getPastLikeSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, s.like_cnt ' +
                         'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
                         'WHERE s.start_date = (SELECT start_date FROM summary ORDER BY start_date DESC LIMIT 1)';
-    var getPastDislikeSummary = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, s.dislike_cnt ' +
+    var getPastDislikeSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, s.dislike_cnt ' +
                         'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
                         'WHERE s.start_date = (SELECT start_date FROM summary ORDER BY start_date DESC LIMIT 1)';
+
+    let pastSummaryResult = null;
+
+    if (parseInt(req.params.isLike)) {
+        pastSummaryResult = await db.queryParam_None(getPastLikeSummaryQuery);
+    } else {
+        pastSummaryResult = await db.queryParam_None(getPastLikeSummaryQuery);
+    }
+
+    if (!pastSummaryResult) {
+        res.status(200).send(authUtil.successFalse(responseMessage.SUMMARY_READ_ERROR, statusCode.VOTE_DB_ERROR));
+    } else {
+        
+        res,status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_SUMMARY, pastSummaryResult))
+    }
 });
 
 //특정 과거 날짜 투표 기록 보기
@@ -77,25 +92,25 @@ cron.schedule('*/5 * * * *', async () => {
     console.log("투표 결과 갱신: " + timeStamp);
 
     var getAllLikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, vr.like_cnt ' + 
-                        'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx';
-    var getAllDislikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, vr.dislike_cnt' +
-                        'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx';
+                        'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.like_cnt DESC';
+    var getAllDislikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, vr.dislike_cnt ' +
+                        'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.dislike_cnt DESC';
 
     let getAllLikeResult = await db.queryParam_None(getAllLikeQuery);
     let getAllDislikeResult = await db.queryParam_None(getAllDislikeQuery);
 
     if (!getAllLikeResult || !getAllDislikeResult) {
-        //res.status(200).send(authUtil.successFalse(null, responseMessage.VOTE_RESULT_DELETE_ERROR, statusCode.VOTE_VOTE_RESULT_DB_ERROR));
+        console.log("vote result file save error");
     } else {
         try {
-            //투표 결과 json 파일로 저장
+            //투표 결과 txt 파일로 저장
             voteFileSys.writeFileSync('allLikeResult.txt', JSON.stringify(getAllLikeResult), 'UTF-8');
             voteFileSys.writeFileSync('allDislikeResult.txt', JSON.stringify(getAllDislikeResult), 'UTF-8');
 
             //투표 결과 시간 redis에 저장
             redisClient.hmset('voteResult', 'timeStamp', timeStamp);
         } catch (resultError) {
-            console.log(resultError)
+            console.log(resultError);
         }
     }
 });

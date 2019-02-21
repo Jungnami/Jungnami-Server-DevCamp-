@@ -8,9 +8,9 @@ const statusCode = require('../../../../commons/utils/statusCode');
 const db = require('../../../module/pool');
 
 //의원 호감, 비호감 투표
-router.post('/', authUtil.isLoggedin, async (req, res) => {
-    let isLike = parseInt(req.query.isLike);
-    let legiCd = parseInt(req.query.code);
+router.post('/:isLike/:legiCd', authUtil.isLoggedin, async (req, res) => {
+    let isLike = parseInt(req.params.isLike);
+    let legiCd = parseInt(req.params.code);
     let insertLegiVoteQuery = '';
 
     let checkBallotNumQuery = 'SELECT ballot FROM vote WHERE user_idx = ?';
