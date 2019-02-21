@@ -50,13 +50,12 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
     let reply_idx = req.body.reply_idx;
     let writer = req.body.writer;
     let content = req.body.content;
-    let writeTime = moment().format('YYYY-MM-DD hh:mm:ss');
 
     if (writer != req.decoded.idx) {
         res.status(200).send(authUtil.successFalse(null, responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
-        var updateRepQuery = 'UPDATE reply SET content = ? writetime = ? WHERE idx = ?';
-        let updateRepResult = await db.queryParam_Arr(updateRepQuery, [content, writeTime, reply_idx]);
+        var updateRepQuery = 'UPDATE reply SET content = ? WHERE idx = ?';
+        let updateRepResult = await db.queryParam_Arr(updateRepQuery, [content, reply_idx]);
 
         if (!updateRepResult) {
             res.status(200).send(authUtil.successFalse(null, responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
