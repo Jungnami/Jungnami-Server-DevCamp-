@@ -52,7 +52,7 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
     let content = req.body.content;
 
     if (writer != req.decoded.idx) {
-        res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
+        res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
     } else {
         var updateRepQuery = 'UPDATE reply SET content = ? WHERE idx = ?';
         let updateRepResult = await db.queryParam_Arr(updateRepQuery, [content, reply_idx]);
@@ -72,7 +72,7 @@ router.delete("/:reply_idx", authUtil.isLoggedin, async(req, res) => {
     let writer = req.body.writer;
 
     if (writer != req.decoded.idx) {
-        res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_DELETE_ERROR, statusCode.REPLY_DB_ERROR));
+        res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
     } else {
         var deleteRepQuery = 'DELETE FROM reply WHERE idx = ?';
         let deleteRepResult = await db.queryParam_Arr(deleteRepQuery, [req.params.reply_idx]);
