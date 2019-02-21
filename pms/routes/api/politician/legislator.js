@@ -5,9 +5,11 @@ const statusCode = require('../../../module/utils/statusCode');
 const responseMessage = require('../../../../commons/utils/responseMessage');
 const router = express.Router();
 
-router.get('/page/:code', async (req, res, next) => {
+// 의원별 상세 정보 페이지
+// cms 내용 추가해야 함
+router.get('/page/:idx', async (req, res, next) => {
   const selectQuery = 'SELECT * FROM legislator WHERE idx = ?';
-  const selectResult = await db.queryParam_Arr(selectQuery, req.params.code);
+  const selectResult = await db.queryParam_Arr(selectQuery, req.params.idx);
 
   if (!selectResult){
     res.status(200).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
