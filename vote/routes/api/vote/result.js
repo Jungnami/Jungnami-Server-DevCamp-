@@ -27,7 +27,7 @@ router.get('/:isLike', async (req, res) => {
                 } else {
                     result.data = JSON.parse(voteFileSys.readFileSync('allDislikeResult.txt', 'UTF-8'));
                 }
-
+                
                 res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_VOTE_RESULT, result));
             } catch (readFileSysError) {
                 res.status(200).send(authUtil.successFalse(responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
@@ -39,12 +39,12 @@ router.get('/:isLike', async (req, res) => {
 //과거 투표 기록 보기
 router.get('/past/:isLike', async (req, res) => {
     //TODO 추후 최신 과거 결과는 저장해놓은거 파싱해서 사용하기
-    var getPastLikeSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, s.like_cnt ' +
-                        'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
-                        'WHERE s.start_date = (SELECT start_date FROM summary ORDER BY start_date DESC LIMIT 1)';
-    var getPastDislikeSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, s.dislike_cnt ' +
-                        'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
-                        'WHERE s.start_date = (SELECT start_date FROM summary ORDER BY start_date DESC LIMIT 1)';
+    var getPastLikeSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.profile_img, s.like_cnt AS vote_cnt ' +
+        'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
+        'WHERE s.start_date = (SELECT start_date FROM summary ORDER BY start_date DESC LIMIT 1)';
+    var getPastDislikeSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.profile_img, s.dislike_cnt AS vote_cnt ' +
+        'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
+        'WHERE s.start_date = (SELECT start_date FROM summary ORDER BY start_date DESC LIMIT 1)';
 
     let pastSummaryResult = null;
 
@@ -57,8 +57,9 @@ router.get('/past/:isLike', async (req, res) => {
     if (!pastSummaryResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.SUMMARY_READ_ERROR, statusCode.VOTE_DB_ERROR));
     } else {
-        
-        res,status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_SUMMARY, pastSummaryResult))
+
+        res,
+        status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_SUMMARY, pastSummaryResult))
     }
 });
 
@@ -68,13 +69,13 @@ router.get('/past/:isLike/:date', async (req, res) => {
     var getPastSummaryQuery = '';
 
     if (parseInt(req.params.isLike)) {
-        getPastSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, s.like_cnt ' +
-        'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
-        'WHERE s.start_date = ?';
+        getPastSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.profile_img, s.like_cnt AS vote_cnt ' +
+            'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
+            'WHERE s.start_date = ?';
     } else {
-        getPastSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, s.dislike_cnt ' +
-        'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
-        'WHERE s.start_date = ?';
+        getPastSummaryQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.profile_img, s.dislike_cnt AS vote_cnt ' +
+            'FROM legislator AS legi JOIN summary AS s ON legi.idx = s.code ' +
+            'WHERE s.start_date = ?';
     }
 
     let getPastSummaryResult = await db.queryParam_Arr(getPastSummaryQuery, [pastDate]);
@@ -82,7 +83,7 @@ router.get('/past/:isLike/:date', async (req, res) => {
     if (!getPastSummaryResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.SUMMARY_READ_ERROR, statusCode.VOTE_SUMMARY_DB_ERROR));
     } else {
-        res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_SUMMARY, getPastSummaryResult));
+        res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_SUMMARY, changeContent(getPastSummaryResult)));
     }
 });
 
@@ -91,10 +92,10 @@ cron.schedule('*/5 * * * *', async () => {
     let timeStamp = moment().format('YYYY-MM-DD hh:mm:ss');
     console.log("투표 결과 갱신: " + timeStamp);
 
-    var getAllLikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, vr.like_cnt ' + 
-                        'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.like_cnt DESC';
-    var getAllDislikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_name, legi.profile_img, vr.dislike_cnt ' +
-                        'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.dislike_cnt DESC';
+    var getAllLikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.profile_img, vr.like_cnt AS vote_cnt ' +
+        'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.like_cnt DESC';
+    var getAllDislikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.profile_img, vr.dislike_cnt AS vote_cnt ' +
+        'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.dislike_cnt DESC';
 
     let getAllLikeResult = await db.queryParam_None(getAllLikeQuery);
     let getAllDislikeResult = await db.queryParam_None(getAllDislikeQuery);
@@ -103,6 +104,21 @@ cron.schedule('*/5 * * * *', async () => {
         console.log("vote result file save error");
     } else {
         try {
+            if (getAllLikeResult.length == 0 && getAllDislikeResult.length == 0) {   //테이블이 비어있을 때
+                var selectAllLegiQuery = 'SELECT idx, legi_name, party_cd, profile_img FROM legislator ORDER BY legi_name ASC';
+                let selectAllLegiResult = await db.queryParam_None(selectAllLegiQuery);
+
+                for (let i = 0; i < selectAllLegiResult.length; i++) {
+                    selectAllLegiResult[i].rank = "-";
+                    selectAllLegiResult[i].ratio = 0;
+                }
+                getAllLikeResult = selectAllLegiResult;
+                getAllDislikeResult = selectAllLegiResult;
+            } else {
+                getAllLikeResult = await changeContent(getAllLikeResult);
+                getAllDislikeResult = await changeContent(getAllDislikeResult);
+            }
+
             //투표 결과 txt 파일로 저장
             voteFileSys.writeFileSync('allLikeResult.txt', JSON.stringify(getAllLikeResult), 'UTF-8');
             voteFileSys.writeFileSync('allDislikeResult.txt', JSON.stringify(getAllDislikeResult), 'UTF-8');
@@ -122,24 +138,44 @@ cron.schedule('* * * * Monday', async () => {
     let updateDateQuery = 'UPDATE summary SET start_date = ?, end_date = ? WHERE start_date = null AND end_date = null';
 
     let moveVoteTableResult = await db.queryParam_None(moveVoteTableQuery);
-    if (!moveVoteTableResult) {
-    } else {
+    if (!moveVoteTableResult) {} else {
         let lastWeek = moment().add(-7, 'days').format('YYYY-MM-DD');
         let today = moment().format('YYYY-MM-DD');
 
         let updateDateResult = await db.queryParam_Arr(updateDateQuery, [lastWeek, today]);
-        if (!updateDateResult) {
-        } else {
+        if (!updateDateResult) {} else {
             let deleteVoteDataResult = await db.queryParam_None(deleteVoteDataQuery);
-            if (!deleteVoteDataResult) {
-            } else {
-            }
+            if (!deleteVoteDataResult) {} else {}
         }
     }
     //TODO 추후 최근 과거 결과 파일로 저장해서 빌드하기
 });
 
+async function changeContent(result) {
+    var preValue = result[0].vote_cnt;
+    var rankCnt = 1;
+    var continuity = 0;
+    var maxVoteVal = result[0].vote_cnt;
 
+    result[0].rank = 1;
+    result[0].ratio = 100;
 
+    for (let i = 1; i < result.length; i++) {
+        if (preValue > result[i].vote_cnt) {
+            rankCnt = rankCnt + continuity + 1;
+            continuity = 0;
+        } else if (preValue == result[i].vote_cnt) {
+            continuity++;
+        } else {
+            break;
+        }
+
+        result[i].rank = rankCnt;
+        preValue = result[i].vote_cnt;
+
+        result[i].ratio = Math.floor((result[i].vote_cnt * 100 / maxVoteVal) / 100);
+    }
+    return result;
+};
 
 module.exports = router;

@@ -81,4 +81,16 @@ router.put('/ballot', authUtil.isLoggedin, async (req, res) => {
     }
 });
 
+//투표권 확인
+router.get('/ballot/check', authUtil.isLoggedin, async (req, res) => {
+    var checkUserBallotQuery = 'SELECT ballot FROM vote WHERE idx = ?';
+    let checkUserBallotResult = await db.queryParam_Arr(checkUserBallotQuery, [req.decoded.idx]);
+
+    if (!checkUserBallotResult) {
+        res.status(200).send(authUtil.successFalse(responseMessage.USER_BALLOT_SELECT_ERROR, statusCode.VOTE_DB_ERROR));
+    } else {
+        res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.USER_BALLOT_SELECT_SUCCESS, checkUserBallotResult[0].ballot));
+    }
+});
+
 module.exports = router;
