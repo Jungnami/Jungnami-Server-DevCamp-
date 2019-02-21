@@ -1,8 +1,8 @@
 const express = require('express');
 const db = require('../../../module/pool');
-const statusCode = require('../../../module/utils/statusCode');
+const statusCode = require('../../../../commons/utils/statusCode');
 const responseMessage = require('../../../../commons/utils/responseMessage');
-const pmsUtil = require('../../../../commons/utils/pmsUtil');
+const authUtil = require('../../../../commons/utils/authUtil');
 
 const router = express.Router();
 
@@ -16,18 +16,18 @@ router.get('/party/:party_cd/:vote', async(req, res, next) => {
         selectPartyResult = await db.queryParam_Arr(selectParty, party_cd);
     
         if(!selectPartyResult) {
-            res.status(statusCode.OK).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
+            res.status(statusCode.OK).send(authUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
         } else {
-            res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.LIST_SUCCESS, selectPartyResult));
+            res.status(statusCode.OK).send(authUtil.successTrue(responseMessage.LIST_SUCCESS, selectPartyResult));
         }
     } else if(req.params.vote == 'dislike') {
         selectParty += 'ORDER BY v.dislike_cnt DESC';
         selectPartyResult = await db.queryParam_Arr(selectParty, req.params.party_cd);
 
         if(!selectPartyResult) {
-            res.status(statusCode.OK).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
+            res.status(statusCode.OK).send(authUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
         } else {
-            res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.LIST_SUCCESS, selectPartyResult));
+            res.status(statusCode.OK).send(authUtil.successTrue(responseMessage.LIST_SUCCESS, selectPartyResult));
         }
     }
 });
