@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../../../module/pool');
-const pmsUtil = require('../../../../commons/utils/pmsUtil');
-const statusCode = require('../../../module/utils/statusCode');
+const authUtil = require('../../../../commons/utils/authUtil');
+const statusCode = require('../../../../commons/utils/statusCode');
 const responseMessage = require('../../../../commons/utils/responseMessage');
 const router = express.Router();
 
@@ -12,9 +12,9 @@ router.get('/page/:idx', async (req, res, next) => {
   const selectResult = await db.queryParam_Arr(selectQuery, req.params.idx);
 
   if (!selectResult){
-    res.status(200).send(pmsUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
+    res.status(200).send(authUtil.successFalse(null, responseMessage.DB_ERROR, statusCode.DB_ERROR));
   } else {
-    res.status(statusCode.OK).send(pmsUtil.successTrue(responseMessage.LEGISLATOR_SUCCESS, selectResult));    
+    res.status(statusCode.OK).send(authUtil.successTrue(responseMessage.LEGISLATOR_SUCCESS, selectResult));    
   }
 });
 
