@@ -29,9 +29,9 @@ router.post('/', authUtil.isLoggedin, async (req, res, next) => {
     const insertCommentResult = await db.queryParam_Arr(insertCommentQuery, [legiIdx, writer, content, writeTime]);
 
     if(!insertCommentResult) {
-        res.status(200).send(authUtil.successFalse(null, responseMessage.REPLY_DB_INSERT_ERROR, statusCode.REPLY_DB_ERROR));
+        res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_INSERT_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
-        res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK, null));
+        res.status(200).send(authUtil.successTrue(statusCode.REPLY_CREATED, responseMessage.REPLY_OK));
     }
 });
 
@@ -41,10 +41,10 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
     const writer = req.body.writer;
     const content = req.body.content;
 
-    if (writer != req.decoded.writer) {
+    if (writer != req.decoded.idx) {
         res.status(200).send(authUtil.successFalse(null, responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
-        res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK, null));
+        res.status(200).send(authUtil.successTrue(statusCode.REPLY_CREATED, responseMessage.REPLY_OK));
     }
 });
 
@@ -59,10 +59,10 @@ router.delete('/:comment_idx', authUtil.isLoggedin, async (req, res) => {
         const updateCommentResult = await db.queryParam_Arr(updateCommentQuery, writer);
 
         if(!encodeURIComponent){
-            res.status(200).send(authUtil.successFalse(null, responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
 
         } else {
-            res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK, null));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_CREATED, responseMessage.REPLY_OK));
         }
     }
 });
