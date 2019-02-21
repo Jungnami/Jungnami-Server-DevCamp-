@@ -4,7 +4,7 @@ var cron = require('node-cron');
 var {PythonShell} = require('python-shell')
 
 //5분마다 기사 크롤링
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/0.3 * * * *', async () => {
     
   var options = {
 
@@ -22,7 +22,7 @@ cron.schedule('*/1 * * * *', async () => {
 
 
   ///Users/kangsujin/Desktop/autoCrawling/crawling/article_crawler.py
-  PythonShell.run('crawling/article_crawler.py', options, function (err, results) {
+  PythonShell.run('../crawling/article_crawler.py', options, function (err, results) {
 
     if (err) {
       console.log("err");
