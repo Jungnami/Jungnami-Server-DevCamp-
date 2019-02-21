@@ -10,19 +10,15 @@ const authUtil = {
             status : status,
             success: true,
             message: message,
-            error: null,
             data: data
         }
     },
-    successFalse: (err, message, status) => {
-        if (!err && !message) {
-            message = 'data not found';
-        }
+    successFalse: (message, status) => {
+        
         return {
             status : status,
             success: false,
             message: message,
-            errors: (err) ? authUtil.parseError(err) : null,
             data: null
         }
     },
