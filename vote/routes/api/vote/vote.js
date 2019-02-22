@@ -8,12 +8,12 @@ const statusCode = require('../../../../commons/utils/statusCode');
 const db = require('../../../module/pool');
 
 //의원 호감, 비호감 투표
-router.post('/:isLike/:legiCd', authUtil.isLoggedin, async (req, res) => {
-    let isLike = parseInt(req.params.isLike);
-    let legiCd = parseInt(req.params.code);
+router.post('/', authUtil.isLoggedin, async (req, res) => {
+    let isLike = req.body.isLike;
+    let legiCd = req.body.code;
     let insertLegiVoteQuery = '';
 
-    let checkBallotNumQuery = 'SELECT ballot FROM vote WHERE user_idx = ?';
+    let checkBallotNumQuery = 'SELECT ballot FROM vote WHERE idx = ?';
     let checkBallotNumResult = await db.queryParam_Arr(checkBallotNumQuery, [req.decoded.idx]);
 
     if (!checkBallotNumResult) {
@@ -31,13 +31,13 @@ router.post('/:isLike/:legiCd', authUtil.isLoggedin, async (req, res) => {
         if (!insertLegiVoteResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.LEGI_VOTE_ERROR, statusCode.VOTE_VOTE_RESULT_DB_ERROR));
         } else {
-            let takeBallotQuery = 'UPDATE vote SET ballot = ballot - 1 WHERE user_idx = ?';
+            let takeBallotQuery = 'UPDATE vote SET ballot = ballot - 1 WHERE idx = ?';
             let takeBallotResult = await db.queryParam_Arr(takeBallotQuery, [req.decoded.idx]);
 
             if (!takeBallotResult) {
                 res.status(200).send(authUtil.successFalse(responseMessage.USER_BALLOT_DECRESE_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
             } else {
-                res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.USER_VOTE_SUCCESS, null));
+                res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.USER_VOTE_SUCCESS));
             }
         }
     }
@@ -78,6 +78,18 @@ router.put('/ballot', authUtil.isLoggedin, async (req, res) => {
         res.status(200).send(authUtil.successFalse(responseMessage.USER_BALLOT_INCRESE_ERROR, statusCode.VOTE_VOTE_DB_ERROR));
     } else {
         res.status(200).send(statusCode.VOTE_OK, authUtil.responseMessage.USER_BALLOT_SUCCESS, userBallot.sequence);
+    }
+});
+
+//투표권 확인
+router.get('/ballot/check', authUtil.isLoggedin, async (req, res) => {
+    var checkUserBallotQuery = 'SELECT ballot FROM vote WHERE idx = ?';
+    let checkUserBallotResult = await db.queryParam_Arr(checkUserBallotQuery, [req.decoded.idx]);
+
+    if (!checkUserBallotResult) {
+        res.status(200).send(authUtil.successFalse(responseMessage.USER_BALLOT_SELECT_ERROR, statusCode.VOTE_DB_ERROR));
+    } else {
+        res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.USER_BALLOT_SELECT_SUCCESS, checkUserBallotResult[0].ballot));
     }
 });
 

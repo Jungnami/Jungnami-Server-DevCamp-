@@ -22,7 +22,7 @@ router.post('/:isLike/:reply_idx', authUtil.isLoggedin, async (req, res) => {
         } else {
             resMessage = responseMessage.REPLY_DISLIKE_ALREADY;
         }
-        res.status(200).send(authUtil.successTrue(statusCode.REPLY_BAD_REQUEST, resMessage, null));
+        res.status(200).send(authUtil.successTrue(statusCode.REPLY_BAD_REQUEST, resMessage));
     } else {    //아무것도 한게 없으면
         if (isLike) {
             resMessage = responseMessage.REPLY_LIKE_LIKE_ERROR;
@@ -36,7 +36,7 @@ router.post('/:isLike/:reply_idx', authUtil.isLoggedin, async (req, res) => {
         if (!insertLikeResult) {
             res.status(200).send(authUtil.successFalse(resMessage, statusCode.REPLY_LIKE_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_LIKE_OK, responseMessage.REPLY_LIKE, null));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_LIKE_OK, responseMessage.REPLY_LIKE));
         }
     }
 });
@@ -49,7 +49,7 @@ router.delete('/:isLike/:reply_idx', authUtil.isLoggedin, async (req, res) => {
     if (!deleteLikeResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_LIKE_CANCEL_ERROR, statusCode.REPLY_LIKE_DB_ERROR));        
     } else {
-        res.status(200).send(authUtil.successTrue(statusCode.REPLY_LIKE_OK, responseMessage.REPLY_LIKE_CANCEL_OK, null));
+        res.status(200).send(authUtil.successTrue(statusCode.REPLY_LIKE_OK, responseMessage.REPLY_LIKE_CANCEL_OK));
     }
 }); 
 
