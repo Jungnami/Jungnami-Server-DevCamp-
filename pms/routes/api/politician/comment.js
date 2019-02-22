@@ -23,10 +23,9 @@ router.post('/', authUtil.isLoggedin, async (req, res, next) => {
     const legiIdx = req.body.legi_id;
     const writer = req.decode.writer;
     const content = req.body.content;
-    const writeTime = moment().format('YYYY-MM-DD hh:mm:ss');
     
-    const insertCommentQuery = 'INSERT INTO comment VALUES (?, ?, ?, ?)'
-    const insertCommentResult = await db.queryParam_Arr(insertCommentQuery, [legiIdx, writer, content, writeTime]);
+    const insertCommentQuery = 'INSERT INTO comment VALUES (?, ?, ?)'
+    const insertCommentResult = await db.queryParam_Arr(insertCommentQuery, [legiIdx, writer, content]);
 
     if(!insertCommentResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_INSERT_ERROR, statusCode.REPLY_DB_ERROR));
@@ -66,3 +65,35 @@ router.delete('/:comment_idx', authUtil.isLoggedin, async (req, res) => {
         }
     }
 });
+
+//댓글 신고
+router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res) => {
+    const selectNotifyQuery = 'SELECT * from notify WHERE id=?'
+    const selectNotifyResult = await connection_Arr(selectNotifyQuery, [req.decoded.idx]);
+
+    if (!selectNotifyResult) {
+        res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYDBERROR, statusCode.REPLYNOTIFYDBERROR));
+    } else {
+        const Transaction = await db.Transaction(async (connection) => {
+            const insertNotifyQuery = 'INSERT INTO notify VALUES (?, ?, ?, ?)';
+            const insertNotifyResult = await connection.query(insertNotifyQuery, [req.decoded.idx, req.params.comment_idx]);
+            if(!insertNotifyResult){
+                res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYDBERROR, statusCode.REPLYNOTIFYDBERROR));
+            }
+
+            const increaseNotifyQuery = 'UPDATE membership SET cumulativenotify=cumulativenotify+1 WHERE idx=?';
+            const increaseNotifyResult = await connection.query(increaseNotifyQuery, [req.decoded.idx]);
+            if(!increaseNotifyResult){
+                res.status(200).send(authUtil.successFalse(null, responseMessage.USERNOTIFYCOUNTERROR, statusCode.USERNOTIFYCOUNTERROR));                
+            }
+        });
+
+        if(!Transaction) {
+            res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYTRANJECTIONERROR, statusCode.REPLYNOTIFYDBERROR));
+        } else {
+            res.status(200).send(authUtil.successTrue(responseMessage.REPLYNOTIFYOK, NULL));
+        }
+    }
+});
+
+module.exports = router;
