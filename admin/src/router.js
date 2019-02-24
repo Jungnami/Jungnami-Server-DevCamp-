@@ -1,9 +1,9 @@
 import Router from 'vue-router';
-import HomePage from './pages/HomePage.vue';
-import AboutPage from './pages/AboutPage.vue';
-import ExamplePage from './pages/ExamplePage.vue';
-// import messagesRoutes from '@/modules/messages/router';
-// import peopleRoutes from '@/modules/people/router';
+import HomePage from './components/HomePage.vue';
+import ExamplePage from './components/ExamplePage';
+import MembershipPage from './components/MembershipPage';
+import PmsPage from './components/PmsPage';
+import CmsPage from './components/CmsPage';
 
 const baseRoutes = [
   {
@@ -12,14 +12,24 @@ const baseRoutes = [
     component: HomePage,
   },
   {
-    path: '/about',
-    name: 'about',
-    component: AboutPage,
-  },
-  {
     path: '/examples',
     name: 'examples',
     component: ExamplePage,
+  },
+  {
+    path: '/membership',
+    name: 'membership',
+    component: MembershipPage,
+  },
+  {
+    path: '/pms',
+    name: 'pms',
+    component: PmsPage,
+  },
+  {
+    path: '/cms',
+    name: 'cms',
+    component: CmsPage,
   },
   {
     path: '*',

@@ -22,26 +22,25 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar class="indigo" dark app>
+    <v-toolbar color="#30B8ED" dark app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>Sidebar template</v-toolbar-title>
+      <v-toolbar-title>정나미</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon @click.native.stop="openGithub()">
-        <v-icon>home</v-icon>
-      </v-btn>
     </v-toolbar>
+    <!--페이지 전환되는 부분-->
     <v-content>
       <v-fade-transition mode="out-in">
         <router-view></router-view>
       </v-fade-transition>
     </v-content>
-    <v-footer class="indigo pa-3" dark app>
-      <span>© 2018 - <a href="https://github.com/disjfa" class="indigo text--lighten-5">disjfa</a></span>
+    <v-footer color='#30B8ED' dark app>
+      <span>© 2018 - <a href="https://github.com/disjfa"></a></span>
     </v-footer>
   </v-app>
 </template>
 
 <script type="text/babel">
+
 export default {
   data() {
     return {
@@ -57,17 +56,25 @@ export default {
         title: 'Example',
         icon: 'extension',
       }, {
-        href: 'about',
+        href: 'membership',
         router: true,
-        title: 'About',
-        icon: 'domain',
+        title: 'Membership',
+        icon: 'MEMBERSHIP',
+      }, {
+        href: 'pms',
+        router: true,
+        title: 'Pms',
+        icon: 'PMS',
+      }, {
+        href: 'cms',
+        router: true,
+        title: 'Cms',
+        icon: 'CMS',
       }],
     };
   },
   methods: {
-    openGithub() {
-      window.open('https://github.com/disjfa/vuetify-sidebar-template');
-    },
+    
   },
 };
 </script>
@@ -76,3 +83,4 @@ export default {
   @import '../node_modules/vuetify/src/stylus/main';
   @import 'css/main.css';
 </style>
+
