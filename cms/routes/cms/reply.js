@@ -35,8 +35,8 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
     let writer = req.decoded.idx;
     let writeTime = moment().format('YYYY-MM-DD hh:mm:ss');
 
-    var insertRepQuery = 'INSERT INTO reply VALUES (?, ?, ?, ?, ?)';
-    let insertRepResult = await db.queryParam_Arr(insertRepQuery, [articleIdx, writer, content, writeTime]);
+    var insertRepQuery = 'INSERT INTO reply (article_idx, writer, content, writetime, parent, depth) VALUES (?, ?, ?, ?, ?, ?)';
+    let insertRepResult = await db.queryParam_Arr(insertRepQuery, [articleIdx, writer, content, writeTime, parent, depth]);
 
     if (!insertRepResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_INSERT_ERROR, statusCode.REPLY_DB_ERROR));
@@ -47,7 +47,7 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
         if (!updatePointResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.USER_POINT_INCRESE_ERROR, statusCode.REPLY_USER_POINT_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
         }
     }
 });
@@ -70,8 +70,6 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
             res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
         }
     }
-
-
 });
 
 //댓글 삭제
