@@ -14,7 +14,7 @@ router.get('/:idx', async(req, res, next) => {
     if(!selectLegiResult) {
         res.status(statusCode.OK).send(authUtil.successFalse(responseMessage.DB_ERROR, statusCode.DB_ERROR));
     } else {
-        res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_DETAIL_LOAD_SUCCESS, responseMessage.LEGISLATOR_DETAIL_SUCCESS,selectLegiResult));
+        res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_OK, responseMessage.LEGISLATOR_DETAIL_SUCCESS,selectLegiResult));
     }
 })
 
