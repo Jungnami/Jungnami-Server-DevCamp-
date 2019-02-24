@@ -6,7 +6,7 @@ import axios from 'axios'
 import App from './App'
 import router from './router'
 import { store } from './store/store'
-import '../../../admin/src/registerServiceWorker';
+// import '../../../admin/src/registerServiceWorker';
 
 Vue.prototype.$http = axios
 Vue.config.productionTip = false

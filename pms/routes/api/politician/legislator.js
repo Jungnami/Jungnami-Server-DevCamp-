@@ -13,8 +13,10 @@ router.get('/:idx', async (req, res, next) => {
   console.log(selectResult)
   if (!selectResult){
     res.status(200).send(authUtil.successFalse(responseMessage.LEGISLATOR_DB_ERROR, statusCode.PMS_DB_ERROR));
+  } else if(selectResult=='') {
+    res.status(200).send(authUtil.successFalse(responseMessage.LEGISLATOR_DETAIL_FAIL, statusCode.PMS_DB_ERROR));
   } else {
-    res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_DETAIL_LOAD_SUCCESS, responseMessage.LEGISLATOR_SUCCESS, selectResult[0]));    
+    res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_DETAIL_LOAD_SUCCESS, responseMessage.LEGISLATOR_DETAIL_SUCCESS, selectResult[0]));    
   }
 });
 

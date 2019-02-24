@@ -10,6 +10,35 @@ const redisClient = require('../../../module/redis');
 const router = express.Router();
 
 router.get('/party/:party_cd/:isLike', async (req, res) => {
+    const partyCd = req.params.party_cd;
+    let isLike = parseInt(req.params.isLike);
+
+    redisClient.hgetall('voteResult', (err, obj) => {
+        if (err) {
+            res.status(200).send(authUtil.successFalse(responseMessage.REDIS_VOTE_RESULT_READ_ERROR, statusCode.VOTE_VOTE_RESULT_REDIS_ERROR));
+        } else {
+            let result = {
+                'timeStamp': obj.timeStamp
+            };
+            try {
+                if (isLike) {
+                    result.data = JSON.parse(voteFileSys.readFileSync('allLikeResult.txt', 'UTF-8'));
+                } else {
+                    result.data = JSON.parse(voteFileSys.readFileSync('allDislikeResult.txt', 'UTF-8'));
+                }
+
+                console.log(result.data)
+
+                res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_VOTE_RESULT, result));
+            } catch (readFileSysError) {
+                res.status(200).send(authUtil.successFalse(responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
+            }
+        }
+    });
+});
+
+router.get('/city/:city_cd/:isLike', async (req, res) => {
+    const cityCd = req.params.city_cd;
     let isLike = parseInt(req.params.isLike);
 
     redisClient.hgetall('voteResult', (err, obj) => {

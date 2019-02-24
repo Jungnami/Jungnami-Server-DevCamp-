@@ -1,11 +1,12 @@
 <template>
-  <v-container>
+    <v-container>
+    <div>
     <h3 class="my-3">의원 검색</h3>
         <v-layout row wrap>
             <!-- <form @submit.prevent="submitOptions(name, party, city, ordinal, crime)"> -->
-            <fieldset name="search-legislator">
+            <fieldset name="search-legislator" style="width:100%">
                 <legend>의원 검색</legend>
-                    <input id="name" type="text" placeholder="이름을 입력하세요" >
+                    <input v-model="name" id="name" type="text" placeholder="이름을 입력하세요" >
                     <select v-model="party">
                     <option selected disabled>정당을 선택하세요</option>
                     <option v-for="party in parties" v-bind:key="party.party_cd">{{ party.party_name }}</option>
@@ -23,27 +24,40 @@
                         <option v-bind:value="1">유</option>
                         <option v-bind:value="0">무</option>
                     </select>
-                <button v-on:click="submitOptions">검색</button>
+                <v-btn v-on:click="submitOptions" sytle="float:right">검색</v-btn>
             </fieldset>
-            <!-- </form> -->
         </v-layout>
-        <v-spacer></v-spacer>
-        <v-layout fill-height>
-            <!-- <v-layout row wrap> -->
-            <fieldset name="search-result">
+    </div>
+    <template>
+        <v-layout row wrap>
+            <fieldset name="search-result-default" style="width:100%">
                 <legend>검색 결과</legend>
-                    <v-flex v-for="i in 12" :key="`${i}`" xs1>
-                        <v-card dark color="secondary">
-                        <v-card-text class="px-0">1</v-card-text>
-                        </v-card>
+                    <v-flex v-for="total in totals" :key="total.idx" xs100>
+                        <v-card-media :src="total.profile_img" height="200px"></v-card-media>
+                            <v-card-text>{{ total.legi_name }}</v-card-text>
                     </v-flex>
+                <v-esle>
+                </v-esle>
             </fieldset>
         </v-layout>
-  </v-container>
+    </template>
+    <div>
+        <v-layout>
+            <fieldset name="search-result-success">
+                <legend>검색 결과</legend>
+                <v-flex v-for="result in results" :key="result.idx" xs100>
+                    <v-card-media :src="result.profile_img" height="200px"></v-card-media>
+                    <v-card-text>{{ result.legi_name }}</v-card-text>
+                </v-flex>
+            </fieldset>
+        </v-layout>
+    </div>
+    </v-container>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+// import PmsResult from './components/PmsResultComponent'
 
 export default {
     data: () => {
@@ -52,11 +66,12 @@ export default {
     },
     computed: {
         ...mapGetters({
-            names: 'getNames',
             parties: 'getParties', 
             cities: 'getCities',
             ordinals: 'getOrdinals',
-            crimes: 'getCrimes'
+            crimes: 'getCrimes',
+            totals: 'getTotals',
+            results: 'getResults'
         }),
     },
     methods: {
@@ -67,5 +82,8 @@ export default {
     created ()  {
         this.$store.dispatch('getOptions')        //action 사용할 때 dispatch
     },
+    // components: {
+    //     'PmsResultComponent': PmsResult
+    // }
 };
 </script>
