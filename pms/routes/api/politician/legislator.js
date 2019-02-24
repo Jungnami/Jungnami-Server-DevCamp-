@@ -10,11 +10,11 @@ const router = express.Router();
 router.get('/:idx', async (req, res, next) => {
   const selectQuery = 'SELECT legi_name, party_cd, region, ordinal, profile_img, reelection, crime, twitter, facebook, blog, phone FROM legislator WHERE idx = ?';
   const selectResult = await db.queryParam_Arr(selectQuery, req.params.idx);
-
+  console.log(selectResult)
   if (!selectResult){
     res.status(200).send(authUtil.successFalse(responseMessage.LEGISLATOR_DB_ERROR, statusCode.PMS_DB_ERROR));
   } else {
-    res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_DETAIL_LOAD_SUCCESS, responseMessage.LEGISLATOR_SUCCESS, selectResult));    
+    res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_DETAIL_LOAD_SUCCESS, responseMessage.LEGISLATOR_SUCCESS, selectResult[0]));    
   }
 });
 
