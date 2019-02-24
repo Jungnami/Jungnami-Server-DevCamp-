@@ -19,6 +19,7 @@ module.exports = {
     LEGISLATOR_SUCCESS: "국회의원 정보 조회 성공",
     LEGISLATOR_DB_INSERT: "국회의원 정보 입력 성공",
     LEGISLATOR_DETAIL_SUCCESS: "국회의원 상세 정보 조회 성공",
+    LEGISLATOR_DETAIL_FAIL: "국회의원 상세 정보 없음",
     LEGISLATOR_DB_ERROR: "국회의원 데이터베이스 에러",
 
     PMS_ADMIN_LOAD_SUCCESS: "PMS ADMIN PAGE 로드 성공",

@@ -17,7 +17,13 @@ export const optionGetters = {
     getCrimes (state) {
         return state.crime
     },
-    getProfileImg (state) {
+    getProfileImgs (state) {
         return state.profileImgs
+    },
+    getTotals (state) {
+        return state.totals
+    },
+    getResults (state) {
+        return state.results
     }
 }

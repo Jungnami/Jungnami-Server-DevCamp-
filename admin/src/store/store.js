@@ -17,6 +17,8 @@ export const store = new Vuex.Store({
     ordinals: null,
     crimes: null,
     profileImgs: null,
+    totals: null,
+    results: null
   },
   getters: Object.assign({}, optionGetters),
   mutations: Object.assign({}, optionMutations),
