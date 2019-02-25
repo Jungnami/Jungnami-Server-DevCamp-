@@ -48,9 +48,9 @@ const authUtil = {
             const user = jwt.verify(token);
             
             if (user == -3) {
-                return res.json(authUtil.successFalse(responseMessage.EXPRIED_TOKEN, statusCode.EXPRIED_TOKEN));
+                return res.json(authUtil.successFalse(responseMessage.EXPRIED_TOKEN, statusCode.AUTH_EXPRIED_TOKEN));
             } else if (user == -2) {
-                return res.json(authUtil.successFalse(responseMessage.INVALID_TOKEN, statusCode.INVALID_TOKEN));
+                return res.json(authUtil.successFalse(responseMessage.INVALID_TOKEN, statusCode.AUTH_INVALID_TOKEN));
             } else {
                 req.decoded = user;
                 next();

@@ -22,7 +22,7 @@ router.get('/:article_id', async (req, res) => {
     if (!selectReqResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_READ_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
-        res.status(200).send(suthUtil.successTrue(responseMessage.REPLY_OK, selectReqResult));
+        res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK, selectReqResult));
     }
 });
 
