@@ -30,10 +30,17 @@ router.get('/:article_id', async (req, res) => {
 router.post('/', authUtil.isLoggedin, async (req, res) => {
     let articleIdx = req.body.articleIdx;
     let parent = req.body.parent;
-    let depth = req.body.depth;
+    let depth = 0;
     let content = req.body.content;
     let writer = req.decoded.idx;
     let writeTime = moment().format('YYYY-MM-DD hh:mm:ss');
+
+    if (parent != 0) {
+        var selectReplyQuery = 'SELECT depth FROM reply WHERE parent = ? ORDER BY depth DESC LIMIT 1';
+        let selectReplyResult = await db.queryParam_Arr(selectReplyQuery, [parent]);
+
+        depth = selectReplyResult[0].depth + 1;
+    }
 
     var insertRepQuery = 'INSERT INTO reply (article_idx, writer, content, writetime, parent, depth) VALUES (?, ?, ?, ?, ?, ?)';
     let insertRepResult = await db.queryParam_Arr(insertRepQuery, [articleIdx, writer, content, writeTime, parent, depth]);
@@ -45,9 +52,9 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
         let updatePointResult = await db.queryParam_Arr(updatePointQuery, [req.decoded.idx]);
 
         if (!updatePointResult) {
-            res.status(200).send(authUtil.successFalse(responseMessage.USER_POINT_INCRESE_ERROR, statusCode.REPLY_USER_POINT_DB_ERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.USER_POINT_INCRESE_ERROR, statusCode.AUTH_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_CREATED, responseMessage.REPLY_OK));
         }
     }
 });
@@ -67,25 +74,26 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
         if (!updateRepResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_PUT_OK));
         }
     }
 });
 
 //댓글 삭제
-router.delete("/:reply_idx", authUtil.isLoggedin, async (req, res) => {
+router.delete("/", authUtil.isLoggedin, async (req, res) => {
+    let reply_idx = req.body.reply_idx;
     let writer = req.body.writer;
 
     if (writer != req.decoded.idx) {
         res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
     } else {
         var deleteRepQuery = 'DELETE FROM reply WHERE idx = ?';
-        let deleteRepResult = await db.queryParam_Arr(deleteRepQuery, [req.params.reply_idx]);
+        let deleteRepResult = await db.queryParam_Arr(deleteRepQuery, [reply_idx]);
 
         if (!deleteRepResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_DELETE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_DELETE_OK));
         }
     }
 

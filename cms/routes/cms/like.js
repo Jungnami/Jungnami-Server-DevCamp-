@@ -8,11 +8,12 @@ const db = require('../../module/pool');
 
 //좋아요, 싫어요 누르기
 router.post('/:isLike/:reply_idx', authUtil.isLoggedin, async (req, res) => {
-    let isLike = req.params.isLike;
+    let reply_idx = req.body.reply_idx;
+    let isLike = req.body.isLike;
     let resMessage = '';
 
     var selectLikeQuery = 'SELECT * FROM reply_like WHERE user_idx = ? AND reply_idx = ?';
-    let selectLikeResult = await db.queryParam_Arr(selectLikeQuery, [req.decoded.idx, req.params.reply_idx]);
+    let selectLikeResult = await db.queryParam_Arr(selectLikeQuery, [req.decoded.idx, reply_idx]);
 
     if (!selectLikeResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_LIKE_DB_ERROR, statusCode.REPLY_LIKE_DB_ERROR));
@@ -31,7 +32,7 @@ router.post('/:isLike/:reply_idx', authUtil.isLoggedin, async (req, res) => {
         }
 
         var insertLikeQuery = 'INSERT INTO reply_like VALUES ( ?, ?, ?)';
-        let insertLikeResult = await db.queryParam_Arr(insertLikeQuery, [req.params.reply_idx, isLike, req.decoded.idx]);
+        let insertLikeResult = await db.queryParam_Arr(insertLikeQuery, [reply_idx, isLike, req.decoded.idx]);
 
         if (!insertLikeResult) {
             res.status(200).send(authUtil.successFalse(resMessage, statusCode.REPLY_LIKE_DB_ERROR));
@@ -44,7 +45,7 @@ router.post('/:isLike/:reply_idx', authUtil.isLoggedin, async (req, res) => {
 //좋아요, 싫어요 취소 
 router.delete('/:isLike/:reply_idx', authUtil.isLoggedin, async (req, res) => {
     var deleteLikeQuery = 'DELETE FROM reply_like WHERE user_idx = ? AND reply_idx = ? AND like_flag = ?';
-    let deleteLikeResult = await db.queryParam_Arr(deleteLikeQuery, [req.decoded.idx, req.params.reply_idx, req.params.isLike]);
+    let deleteLikeResult = await db.queryParam_Arr(deleteLikeQuery, [req.decoded.idx, req.body.reply_idx, req.body.isLike]);
 
     if (!deleteLikeResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_LIKE_CANCEL_ERROR, statusCode.REPLY_LIKE_DB_ERROR));        

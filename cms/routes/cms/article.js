@@ -24,13 +24,16 @@ router.get('/', async (req, res) => {
 
 //특정 기사 보기 + 댓글까지 (대댓글을 댓글을 클릭했을 때)
 router.get('/:article_idx', async (req, res) => {
-    var getParentReplyQuery = 'SELECT * FROM article AS a JOIN reply AS r ON a.id = r.article_id WHERE a.id = 1 AND r.parent = 0 AND r.depth = 0;';
+    var getArticleQuery = 'SELECT * FROM article WHERE id = ?';
+    let getArticleResult = await db.queryParam_Arr(getArticleQuery, [req.params.article_idx]);
+
+    var getParentReplyQuery = 'SELECT * FROM reply WHERE article_id = ? AND parent = 0 AND depth = 0;';
     let getParentReplyResult = await db.queryParam_Arr(getParentReplyQuery, [req.params.article_idx]);
 
-    if (!getParentReplyResult) {
+    if (!getArticleResult || !getParentReplyResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_READ_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
-        res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_READ, getParentReplyResult));
+        res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_READ, { 'article' : getParentReplyResult, 'reply' : getParentReplyResult}));
     }
 });
 

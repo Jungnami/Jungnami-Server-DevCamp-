@@ -60,7 +60,11 @@ module.exports = {
 
     NO_AUTHORITY: "수정/삭제 권한이 없습니다(작성자가 아닙니다)",
     REPLY_OK: "댓글 작성 성공",
+<<<<<<< HEAD
     REPLY_MODIFIED_OK:"댓글 수정 성공",
+=======
+    REPLY_PUT_OK: "댓글 수정 성공",
+>>>>>>> e2e107bc91d902ec3462520b893a19f22274b5c1
     REPLY_DELETE_OK: "댓글 삭제 성공",
     REPLY_READ:"댓글 읽기 성공",
     REPLY_READ_ERROR: "댓글 읽기 에러",
