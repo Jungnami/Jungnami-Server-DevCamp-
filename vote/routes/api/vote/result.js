@@ -92,7 +92,7 @@ cron.schedule('*/5 * * * *', async () => {
     let timeStamp = moment().format('YYYY-MM-DD hh:mm:ss');
     console.log("투표 결과 갱신: " + timeStamp);
 
-    var getAllLikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.city_cd, legi.profile_img, vr.like_cnt AS vote_cnt ' +
+    var getAllLikeQuery = 'SELECT legi.idx AS idx, legi.legi_name, legi.party_cd, legi.city_cd, legi.profile_img, vr.like_cnt AS vote_cnt ' +
         'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.like_cnt DESC';
     var getAllDislikeQuery = 'SELECT legi.idx, legi.legi_name, legi.party_cd, legi.city_cd, legi.profile_img, vr.dislike_cnt AS vote_cnt ' +
         'FROM legislator AS legi JOIN vote_result AS vr ON legi.idx = vr.idx ORDER BY vr.dislike_cnt DESC';
@@ -104,10 +104,10 @@ cron.schedule('*/5 * * * *', async () => {
         console.log("vote result file save error");
     } else {
         try {
-            if (getAllLikeResult.length == 0 && getAllDislikeResult.length == 0) {   //테이블이 비어있을 때
-                var selectAllLegiQuery = 'SELECT idx, legi_name, party_cd, profile_img FROM legislator ORDER BY legi_name ASC';
-                let selectAllLegiResult = await db.queryParam_None(selectAllLegiQuery);
+            var selectAllLegiQuery = 'SELECT idx, legi_name, party_cd, profile_img FROM legislator ORDER BY legi_name ASC';
+            let selectAllLegiResult = await db.queryParam_None(selectAllLegiQuery);
 
+            if (getAllLikeResult.length == 0 && getAllDislikeResult.length == 0) {   //테이블이 비어있을 때
                 for (let i = 0; i < selectAllLegiResult.length; i++) {
                     selectAllLegiResult[i].rank = "-";
                     selectAllLegiResult[i].ratio = 0;
@@ -115,6 +115,9 @@ cron.schedule('*/5 * * * *', async () => {
                 getAllLikeResult = selectAllLegiResult;
                 getAllDislikeResult = selectAllLegiResult;
             } else {
+                addRestRegi(selectAllLegiResult, getAllLikeResult);
+                addRestRegi(selectAllLegiResult, getAllDislikeResult);
+
                 getAllLikeResult = await changeContent(getAllLikeResult);
                 getAllDislikeResult = await changeContent(getAllDislikeResult);
             }
@@ -157,7 +160,7 @@ async function changeContent(result) {
     var continuity = 0;
     var maxVoteVal = result[0].vote_cnt;
 
-    result[0].rank = 1;
+    result[0].rank = '1';
     result[0].ratio = 100;
 
     for (let i = 1; i < result.length; i++) {
@@ -170,12 +173,26 @@ async function changeContent(result) {
             break;
         }
 
-        result[i].rank = rankCnt;
+        result[i].rank = rankCnt.toString();
         preValue = result[i].vote_cnt;
 
         result[i].ratio = Math.floor((result[i].vote_cnt * 100 / maxVoteVal) / 100);
     }
     return result;
 };
+
+function addRestRegi(legiList, result) {
+    let lastIdx = result.length;
+    for (var i = 0; i < legiList.length; i++) {
+        for (var j = 0; j < lastIdx; j++) {
+            if (legiList[i].idx != result[j].idx) {    //투표한 사람이 없는 의원일 경우
+                legiList[i].rank = "-";
+                legiList[i].ratio = 0;
+
+                result[result.length] = legiList[i];
+            }
+        }
+    }
+}
 
 module.exports = router;
