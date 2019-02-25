@@ -9,19 +9,18 @@ const db = require('../../module/pool');
 
 //댓글 보기 + 대댓글 보기
 router.get('/:article_id', async (req, res) => {
-    let parent = req.query.parent;
-    var selectReqQuery = 'SELECT * FROM reply WHERE article_id = ? AND parent = ?';
-
-    if (!req.query.parent) {
-        selectReqQuery += " ORDER BY depth"
-    } else {
-        parent = 0;
-    }
-    let selectReqResult = await db.queryParam_Arr(selectReqQuery, [req.params.article_id, parent]);
+    var selectReqQuery = 'SELECT * FROM reply WHERE article_id = ? AND parent = 0 ORDER BY writetime';
+    let selectReqResult = await db.queryParam_Arr(selectReqQuery, [req.params.article_id]);
 
     if (!selectReqResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_READ_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
+        for (let i = 0; i < selectReqResult.length; i++) {
+            var selectReReplyQuery = 'SELECT * FROM reply WHERE article_id = ? AND parent = ? ORDER BY writetime';
+            let selectReReplyReuslt = await db.queryParam_Arr(selectReReplyQuery, [req.params.article_id, selectReqResult[i].idx]);
+
+            selectReqResult[i].rereply = selectReReplyReuslt;
+        }
         res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK, selectReqResult));
     }
 });
@@ -82,7 +81,7 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
 //댓글 삭제
 router.delete("/", authUtil.isLoggedin, async (req, res) => {
     let reply_idx = req.body.reply_idx;
-    let writer = req.body.writer;
+    let writer = req.body.idx;
 
     if (writer != req.decoded.idx) {
         res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
