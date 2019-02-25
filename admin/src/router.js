@@ -4,6 +4,7 @@ import ExamplePage from './components/ExamplePage';
 import MembershipPage from './components/MembershipPage';
 import PmsPage from './components/PmsPage';
 import CmsPage from './components/CmsPage';
+// import ResultComponent from './components/ResultComponent';
 
 const baseRoutes = [
   {
@@ -31,6 +32,11 @@ const baseRoutes = [
     name: 'cms',
     component: CmsPage,
   },
+  // {
+  //   path: '/pms/detail',
+  //   name: 'detail',
+  //   componenet: ResultComponent,
+  // },
   {
     path: '*',
     redirect: {

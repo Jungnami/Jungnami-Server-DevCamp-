@@ -20,10 +20,28 @@ export const optionGetters = {
     getProfileImgs (state) {
         return state.profileImgs
     },
+    getReelections (state) {
+        return state.reelections
+    },
+    getTwitters (state) {
+        return state.twitters
+    },
+    getFacebooks (state) {
+        return state.facebooks
+    },
+    getBlogs (state) {
+        return state.blogs
+    },
+    getPhones (state) {
+        return state.phones
+    },
     getTotals (state) {
         return state.totals
     },
     getResults (state) {
         return state.results
+    },
+    getDetails (state) {
+        return state.details
     }
 }

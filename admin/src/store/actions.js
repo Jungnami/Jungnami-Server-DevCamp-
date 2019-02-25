@@ -21,12 +21,29 @@ export const optionActions = {
     },
 
     submitOptions ({ commit }, payload) {
-        console.log(payload)
         instance.post('/pms/search', payload).then(response => {
             console.log(response.data)
             commit('postOptionSuccess', response.data.data)
         }).catch(error => {
             console.log(error)
+        })
+    },
+
+    getDetails({ commit }, payload) {
+        instance.get('/detail/:idx', {params: { idx: getTotals.idx }}, payload).then(response => {
+            console.log(response.data)
+            commit('getDetailSuccess', response.data.data)
+        }).catch(error => {
+            
+        })
+    },
+
+    updateDetail({ commit }, payload){
+        instance.put('/update/:idx', payload).then(response => {
+            console.log(response.data)
+            commit('updateDetailSuccess', response.data.data)
+        }).catch(error => {
+
         })
     }
 }
