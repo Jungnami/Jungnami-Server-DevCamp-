@@ -7,7 +7,7 @@ const statusCode = require('../../../../commons/utils/statusCode');
 const responseMessage = require('../../../../commons/utils/responseMessage');
 
 //댓글 표시
-router.get('/:legi_id', async (req, res) => {
+router.get('/:legi_id', async (req, res, next) => {
     const selectCommentQuery = 'SELECT * FROM legislator_comment WHERE legi_idx = ?';
     const selectCommentResult = await db.queryParam_Arr(selectCommentQuery, [req.params.legi_id]);
 
@@ -43,7 +43,7 @@ router.post('/', authUtil.isLoggedin, async (req, res, next) => {
 });
 
 //댓글 수정
-router.put('/', authUtil.isLoggedin, async (req, res) => {
+router.put('/', authUtil.isLoggedin, async (req, res, next) => {
     const reply_idx = req.body.reply_idx;
     const writer = req.body.writer;
     const content = req.body.content;
@@ -63,7 +63,7 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
 });
 
 //댓글 삭제
-router.delete('/', authUtil.isLoggedin, async (req, res) => {
+router.delete('/', authUtil.isLoggedin, async (req, res, next) => {
     const reply_idx = req.body.reply_idx;
     const writer = req.body.writer;
 
@@ -82,7 +82,7 @@ router.delete('/', authUtil.isLoggedin, async (req, res) => {
 });
 
 //댓글 신고
-router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res) => {
+router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res,) => {
     const selectNotifyQuery = 'SELECT * from legislator_comment_notify WHERE id=?'
     const selectNotifyResult = await connection_Arr(selectNotifyQuery, [req.decoded.idx]);
 
