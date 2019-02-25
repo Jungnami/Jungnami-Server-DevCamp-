@@ -11,6 +11,7 @@ router.post('/', authUtil.isLoggedin, async (req, res, next) => {
     const isLike = req.body.isLike;
     const reply_idx = req.body.reply_idx;
     let resMsg = '';
+    let statusCd = '';
 
     const selectLikeQuery = 'SELECT * FROM legislator_comment_like WHERE user_idx=? AND comment_idx=?'
     const selectLikeResult = await db.queryParam_Arr(selectLikeQuery, [req.decoded.idx, reply_idx])
@@ -19,21 +20,23 @@ router.post('/', authUtil.isLoggedin, async (req, res, next) => {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_LIKE_READ_ERROR, statusCode.REPLY_LIKE_DB_ERROR))
     } else if(selectLikeResult.length === 1){
         const deleteLikeQuery = 'DELETE FROM legislator_comment_like WHERE user_idx = ? AND comment_idx = ? AND like_flag = ?';
-        let deleteLikeResult;
+        const deleteLikeResult = await db.queryParam_Arr(deleteLikeQuery, [req.decoded.idx, reply_idx, isLike]);;
 
         if(isLike === '1') {
-            deleteLikeResult = await db.queryParam_Arr(deleteLikeQuery, [req.decoded.idx, reply_idx, isLike]);
+            resMsg = responseMessage.REPLY_LIKE_CANCEL_OK;
+            statusCd = statusCode.REPLY_LIKE_CANCLE_OK;
         } else {
-            deleteLikeResult = await db.queryParam_Arr(deleteLikeQuery, [req.decoded.idx, reply_idx, isLike]);
+            resMsg = responseMessage.REPLY_DISLIKE_CANCEL_OK;
+            statusCd = statusCode.REPLY_DISLIKE_CANCLE_OK;
         }
 
         if (!deleteLikeResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_LIKE_CANCEL_ERROR, statusCode.REPLY_LIKE_DB_ERROR));        
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_LIKE_OK, responseMessage.REPLY_LIKE_CANCEL_OK));
+            res.status(200).send(authUtil.successTrue(statusCd, resMsg));
         }
 
-    } else {
+    } else { 
         if(isLike === '1') {
             resMsg = responseMessage.REPLY_LIKE_LIKE_ERROR;
         } else {
@@ -43,10 +46,16 @@ router.post('/', authUtil.isLoggedin, async (req, res, next) => {
         const insertLikeQuery = 'INSERT INTO legislator_comment_like (comment_idx, like_flag, user_idx) VALUES (?, ?, ?)';
         const insertLikeResult = await db.queryParam_Arr(insertLikeQuery, [reply_idx, isLike, req.decoded.idx]);
 
+        if(isLike === '1') {
+            resMsg = responseMessage.REPLY_LIKE_OK;
+        } else {
+            resMsg = responseMessage.REPLY_DISLIKE_OK;
+        }
+
         if(!insertLikeResult){
             res.status(200).send(authUtil.successFalse(resMsg, statusCode.REPLY_LIKE_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_LIKE_OK, responseMessage.REPLY_LIKE_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_LIKE_OK, resMsg));
         }
     }
 });

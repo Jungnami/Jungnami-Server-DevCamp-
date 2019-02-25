@@ -24,7 +24,6 @@ router.get('/:idx', async (req, res, next) => {
         resArr = selectResult[0];
     }
 
-console.log(resArr)
     //호감 순위
     redisClient.hgetall('voteResult', (err, obj) => {
         if (err) {

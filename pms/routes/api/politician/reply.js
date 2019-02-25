@@ -10,11 +10,9 @@ const responseMessage = require('../../../../commons/utils/responseMessage');
 router.get('/:legi_id', async (req, res, next) => {
     const selectCommentQuery = 'SELECT * FROM legislator_comment WHERE legi_idx = ?';
     const selectCommentResult = await db.queryParam_Arr(selectCommentQuery, [req.params.legi_id]);
-
+    console.log(selectCommentResult)
     if(!selectCommentResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_READ_ERROR, statusCode.REPLY_READ_ERROR));
-    } else if (selectCommentResult == '') {
-        res.status(200).send(authUtil.successFalse(responseMessage.REPLY_READ_ERROR, statusCode.REPLY_READ_ERROR));        
     } else {
         res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_READ, selectCommentResult));
     }
@@ -82,29 +80,30 @@ router.delete('/', authUtil.isLoggedin, async (req, res, next) => {
 });
 
 //댓글 신고
-router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res,) => {
-    const selectNotifyQuery = 'SELECT * from legislator_comment_notify WHERE id=?'
-    const selectNotifyResult = await connection_Arr(selectNotifyQuery, [req.decoded.idx]);
+router.post('/notify', authUtil.isLoggedin, async (req, res,) => {
+    const reply_idx = req.body.reply_idx;
+    const selectNotifyQuery = 'SELECT * from legislator_comment_notify WHERE user_idx=?'
+    const selectNotifyResult = await db.queryParam_Arr(selectNotifyQuery, [req.decoded.idx]);
 
     if (!selectNotifyResult) {
         res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYDBERROR, statusCode.REPLYNOTIFYDBERROR));
     } else {
         const Transaction = await db.Transaction(async (connection) => {
-            const insertNotifyQuery = 'INSERT INTO legislator_comment_notify VALUES (?, ?, ?, ?)';
-            const insertNotifyResult = await connection.query(insertNotifyQuery, [req.decoded.idx, req.params.reply_idx]);
+            const insertNotifyQuery = 'INSERT INTO legislator_comment_notify (user_idx, comment_idx) VALUES (?, ?)';
+            const insertNotifyResult = await connection.query(insertNotifyQuery, [req.decoded.idx, reply_idx]);
             if(!insertNotifyResult){
-                res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYDBERROR, statusCode.REPLYNOTIFYDBERROR));
+                res.status(200).send(authUtil.successFalse(responseMessage.REPLYNOTIFYDBERROR, statusCode.REPLYNOTIFYDBERROR));
             }
 
-            const increaseNotifyQuery = 'UPDATE membership2 SET cumulativenotify=cumulativenotify+1 WHERE idx=?';
+            const increaseNotifyQuery = 'UPDATE membership2 SET cumulative_notify=cumulative_notify+1 WHERE idx=?';
             const increaseNotifyResult = await connection.query(increaseNotifyQuery, [req.decoded.idx]);
             if(!increaseNotifyResult){
-                res.status(200).send(authUtil.successFalse(null, responseMessage.USERNOTIFYCOUNTERROR, statusCode.USERNOTIFYCOUNTERROR));                
+                res.status(200).send(authUtil.successFalse(responseMessage.USERNOTIFYCOUNTERROR, statusCode.USERNOTIFYCOUNTERROR));                
             }
         });
 
         if(!Transaction) {
-            res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYTRANJECTIONERROR, statusCode.REPLYNOTIFYDBERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.REPLYNOTIFYTRANJECTIONERROR, statusCode.REPLYNOTIFYDBERROR));
         } else {
             res.status(200).send(authUtil.successTrue(responseMessage.REPLYNOTIFYOK, NULL));
         }
