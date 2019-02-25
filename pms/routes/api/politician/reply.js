@@ -44,7 +44,7 @@ router.post('/', authUtil.isLoggedin, async (req, res, next) => {
 
 //댓글 수정
 router.put('/', authUtil.isLoggedin, async (req, res) => {
-    const comment_idx = req.body.comment_idx;
+    const reply_idx = req.body.reply_idx;
     const writer = req.body.writer;
     const content = req.body.content;
 
@@ -52,7 +52,7 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
         const updateCommentQuery = 'UPDATE legislator_comment SET content=? WHERE idx=?';
-        const updateCommentResult = await db.queryParam_Arr(updateCommentQuery, [content, comment_idx]);
+        const updateCommentResult = await db.queryParam_Arr(updateCommentQuery, [content, reply_idx]);
 
         if (!updateCommentResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
@@ -64,14 +64,14 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
 
 //댓글 삭제
 router.delete('/', authUtil.isLoggedin, async (req, res) => {
-    const comment_idx = req.body.comment_idx;
+    const reply_idx = req.body.reply_idx;
     const writer = req.body.writer;
 
     if(writer != req.decoded.idx){
         res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
     } else {
         const deleteCommentQuery = 'DELETE FROM legislator_comment WHERE idx=?';
-        const deleteCommentResult = await db.queryParam_Arr(deleteCommentQuery, comment_idx);
+        const deleteCommentResult = await db.queryParam_Arr(deleteCommentQuery, reply_idx);
         
         if(!deleteCommentResult){
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
@@ -82,7 +82,7 @@ router.delete('/', authUtil.isLoggedin, async (req, res) => {
 });
 
 //댓글 신고
-router.post('/notify/:comment_idx', authUtil.isLoggedin, async (req, res) => {
+router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res) => {
     const selectNotifyQuery = 'SELECT * from legislator_comment_notify WHERE id=?'
     const selectNotifyResult = await connection_Arr(selectNotifyQuery, [req.decoded.idx]);
 
@@ -91,7 +91,7 @@ router.post('/notify/:comment_idx', authUtil.isLoggedin, async (req, res) => {
     } else {
         const Transaction = await db.Transaction(async (connection) => {
             const insertNotifyQuery = 'INSERT INTO legislator_comment_notify VALUES (?, ?, ?, ?)';
-            const insertNotifyResult = await connection.query(insertNotifyQuery, [req.decoded.idx, req.params.comment_idx]);
+            const insertNotifyResult = await connection.query(insertNotifyQuery, [req.decoded.idx, req.params.reply_idx]);
             if(!insertNotifyResult){
                 res.status(200).send(authUtil.successFalse(null, responseMessage.REPLYNOTIFYDBERROR, statusCode.REPLYNOTIFYDBERROR));
             }
