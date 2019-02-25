@@ -93,6 +93,7 @@ router.post('/insert', async(req, res, next) => {
         await detail();
     } catch (err) {
         res.status(statusCode.OK).send(authUtil.successFalse('null', responseMessage.DB_ERROR));
+        done()
     } 
     res.status(statusCode.OK).send(authUtil.successTrue(responseMessage.LEGISLATOR_DB_INSERT));
 });

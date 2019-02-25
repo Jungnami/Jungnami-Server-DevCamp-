@@ -55,7 +55,7 @@ router.put('/', authUtil.isLoggedin, async (req, res, next) => {
         if (!updateCommentResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_MODIFIED, responseMessage.REPLY_MODIFIED_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_MODIFIED, responseMessage.REPLY_PUT_OK));
         }
     }
 });
