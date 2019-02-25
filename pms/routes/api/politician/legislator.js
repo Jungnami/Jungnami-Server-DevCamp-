@@ -8,8 +8,6 @@ const voteFileSys = require('mz/fs');
 const redisClient = require('../../../module/redis');
 const router = express.Router();
 
-const dir = '/Users/ihaeeun/Project/SmileGate/Jungnami-Server-DevCamp-/vote/'
-
 // 의원별 상세 정보 페이지
 // 호감, 비호감 순위
 router.get('/:idx', async (req, res, next) => {
@@ -36,8 +34,8 @@ console.log(resArr)
             let tmpDislike;
 
             try {
-                tmpLike = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + 'allLikeResult.txt'), 'UTF-8'));
-                tmpDislike = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + 'allDislikeResult.txt'), 'UTF-8'));
+                tmpLike = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allLikeResult.txt'), 'UTF-8'));
+                tmpDislike = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allDislikeResult.txt'), 'UTF-8'));
             } catch (readFileSysError) {
                 res.status(200).send(authUtil.successFalse(responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
             }
@@ -53,7 +51,7 @@ console.log(resArr)
             if (err) {
                 res.status(200).send(authUtil.successFalse(responseMessage.LIST_FAIL, statusCode.PMS_NO_CONTENT));
             } else {
-                res.status(200).send(authUtil.successTrue(statusCode.PMS_OK, responseMessage.LIST_SUCCESS, selectResult));
+                res.status(200).send(authUtil.successTrue(statusCode.PMS_OK, responseMessage.LIST_SUCCESS, selectResult[0]));
             }
         }
     })

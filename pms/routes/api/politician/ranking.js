@@ -7,10 +7,9 @@ const responseMessage = require('../../../../commons/utils/responseMessage');
 const authUtil = require('../../../../commons/utils/authUtil');
 const redisClient = require('../../../module/redis');
 
-// require('../../../')
+// require('../../../../vote/')
 
 const router = express.Router();
-const dir = '/Users/ihaeeun/Project/SmileGate/Jungnami-Server-DevCamp-/vote/'
 
 router.get('/party/:party_cd/:isLike', async (req, res) => {
     const partyCd = req.params.party_cd;
@@ -22,14 +21,12 @@ router.get('/party/:party_cd/:isLike', async (req, res) => {
         } else {
             let tmpResult;
             let resArr = new Array();
-            let result = {
-                'timeStamp': obj.timeStamp
-            };
+
             try {
                 if (isLike) {
-                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + 'allLikeResult.txt'), 'UTF-8'));
+                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allLikeResult.txt'), 'UTF-8'));
                 } else {
-                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + 'allDislikeResult.txt'), 'UTF-8'));
+                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allDislikeResult.txt'), 'UTF-8'));
                 }
             } catch (readFileSysError) {
                 res.status(200).send(authUtil.successFalse(responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
@@ -70,9 +67,9 @@ router.get('/city/:city_cd/:isLike', async (req, res) => {
             };
             try {
                 if (isLike) {
-                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + filename), 'UTF-8'));
+                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allLikeResult.txt'), 'UTF-8'));
                 } else {
-                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + filename), 'UTF-8'));
+                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allDisikeResult.txt'), 'UTF-8'));
                 }
             } catch (readFileSysError) {
                 res.status(200).send(authUtil.successFalse(responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
