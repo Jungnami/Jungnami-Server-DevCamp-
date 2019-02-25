@@ -176,7 +176,7 @@ async function changeContent(result) {
         result[i].rank = rankCnt.toString();
         preValue = result[i].vote_cnt;
 
-        result[i].ratio = Math.floor((result[i].vote_cnt * 100 / maxVoteVal) / 100);
+        result[i].ratio = Math.floor((result[i].vote_cnt * 100 / maxVoteVal));
     }
     return result;
 };
@@ -184,13 +184,18 @@ async function changeContent(result) {
 function addRestRegi(legiList, result) {
     let lastIdx = result.length;
     for (var i = 0; i < legiList.length; i++) {
+        let flag = 0;
         for (var j = 0; j < lastIdx; j++) {
-            if (legiList[i].idx != result[j].idx) {    //투표한 사람이 없는 의원일 경우
-                legiList[i].rank = "-";
-                legiList[i].ratio = 0;
-
-                result[result.length] = legiList[i];
+            if (legiList[i].idx == result[j].idx) {    //투표한 사람이 없는 의원일 경우
+                flag = 1;
             }
+        }
+
+        if (flag == 0) {
+            legiList[i].rank = "-";
+            legiList[i].ratio = 0;
+
+            result[result.length] = legiList[i];
         }
     }
 }
