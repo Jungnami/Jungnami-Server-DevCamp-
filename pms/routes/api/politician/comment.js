@@ -13,6 +13,8 @@ router.get('/:legi_id', async (req, res) => {
 
     if(!selectCommentResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_READ_ERROR, statusCode.REPLY_READ_ERROR));
+    } else if (selectCommentResult == '') {
+        res.status(200).send(authUtil.successFalse(responseMessage.REPLY_READ_ERROR, statusCode.REPLY_READ_ERROR));        
     } else {
         res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_READ, selectCommentResult));
     }
@@ -55,7 +57,7 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
         if (!updateCommentResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_MODIFIED, responseMessage.REPLY_MODIFIED_OK));
         }
     }
 });
@@ -73,7 +75,7 @@ router.delete('/:comment_idx', authUtil.isLoggedin, async (req, res) => {
         if(!deleteCommentResult){
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_CREATED, responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_DELETED, responseMessage.REPLY_DELETE_OK));
         }
     }
 });

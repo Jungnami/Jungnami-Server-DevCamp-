@@ -10,8 +10,7 @@ const redisClient = require('../../../module/redis');
 // require('../../../')
 
 const router = express.Router();
-const dir = '/Users/ihaeeun/Project/SmileGate/Jungnami-Server-DevCamp-'
-const filename = '/vote/allLikeResult.txt'
+const dir = '/Users/ihaeeun/Project/SmileGate/Jungnami-Server-DevCamp-/vote/'
 
 router.get('/party/:party_cd/:isLike', async (req, res) => {
     const partyCd = req.params.party_cd;
@@ -28,9 +27,9 @@ router.get('/party/:party_cd/:isLike', async (req, res) => {
             };
             try {
                 if (isLike) {
-                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + filename), 'UTF-8'));
+                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + 'allLikeResult.txt'), 'UTF-8'));
                 } else {
-                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + filename), 'UTF-8'));
+                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve(dir + 'allDislikeResult.txt'), 'UTF-8'));
                 }
             } catch (readFileSysError) {
                 res.status(200).send(authUtil.successFalse(responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
@@ -47,8 +46,11 @@ router.get('/party/:party_cd/:isLike', async (req, res) => {
 
             if(err) {
                 res.status(200).send(authUtil.successFalse(responseMessage.LIST_FAIL, statusCode.PMS_NO_CONTENT))
+            } else if(result.data == ''){
+                res.status(200).send(authUtil.successFalse(responseMessage.LIST_FAIL, statusCode.PMS_NO_CONTENT))
+            } else {
+                res.status(200).send(authUtil.successTrue(statusCode.PMS_OK, responseMessage.LIST_SUCCESS, result));
             }
-            res.status(200).send(authUtil.successTrue(statusCode.PMS_OK, responseMessage.LIST_SUCCESS, result));
         }
     });
 });
@@ -87,8 +89,11 @@ router.get('/city/:city_cd/:isLike', async (req, res) => {
 
             if(err) {
                 res.status(200).send(authUtil.successFalse(responseMessage.LIST_FAIL, statusCode.PMS_NO_CONTENT))
-            }
+            } else if(result.data == ''){
+                res.status(200).send(authUtil.successFalse(responseMessage.LIST_FAIL, statusCode.PMS_NO_CONTENT))
+            } else {
             res.status(200).send(authUtil.successTrue(statusCode.PMS_OK, responseMessage.LIST_SUCCESS, result));
+            }
         }
     });
 });
