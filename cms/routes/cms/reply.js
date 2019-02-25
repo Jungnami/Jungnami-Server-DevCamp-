@@ -38,10 +38,14 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
         var selectReplyQuery = 'SELECT depth FROM reply WHERE parent = ? ORDER BY depth DESC LIMIT 1';
         let selectReplyResult = await db.queryParam_Arr(selectReplyQuery, [parent]);
 
-        depth = selectReplyResult[0].depth + 1;
+        if (selectReplyResult.length == 0) {
+            depth = 1;
+        } else {
+            depth = selectReplyResult[0].depth + 1;
+        }
     }
 
-    var insertRepQuery = 'INSERT INTO reply (article_idx, writer, content, writetime, parent, depth) VALUES (?, ?, ?, ?, ?, ?)';
+    var insertRepQuery = 'INSERT INTO reply (article_id, writer, content, writetime, parent, depth) VALUES (?, ?, ?, ?, ?, ?)';
     let insertRepResult = await db.queryParam_Arr(insertRepQuery, [articleIdx, writer, content, writeTime, parent, depth]);
 
     if (!insertRepResult) {
