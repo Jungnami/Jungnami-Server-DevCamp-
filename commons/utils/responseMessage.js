@@ -1,6 +1,7 @@
 module.exports = {
-    INVALID_TOKEN: "토큰값이 유효하지 않습니다.",
+    INVALID_TOKEN: "잘못된 형식의 토큰입니다.",
     EMPTY_TOKEN: "토큰값이 존재하지 않습니다.",
+    EXPRIED_TOKEN: "만료된 토큰입니다.",
     EMPTY_REFRESH_TOKEN: "재발급 토큰이 존재하지 않습니다.",
     REFRESH_TOKEN: "토큰 재발급 완료.",
 
@@ -31,7 +32,7 @@ module.exports = {
     LEGI_VOTE_ERROR: "의원 투표 데이터베이스 에러",
 
     USER_BALLOT_SELECT_SUCCESS: "투표 조회 성공",
-    USER_BALLOT_SELECT_ERROR: "투표 조회 에러",
+    USER_BALLOT_SELECT_ERROR: "투표권 조회 에러",
     USER_BALLOT_INCRESE_ERROR: "투표권 증가 에러",
     USER_BALLOT_DECRESE_ERROR: "투표권 감소 에러",
     USER_BALLOT_AMOUNT_LACK: "투표권 보유량 부족",
@@ -54,6 +55,8 @@ module.exports = {
     READ_SUMMARY: "과거 투표 결과 조회 성공",
     SUMMARY_READ_ERROR: "과거 투표 결과 조회 에러",
 
+    ARTICLE_READ: "글 읽기 성공",
+    ATRICLE_DB_READ_ERROR: "글 읽기 에러",
 
     NO_AUTHORITY: "수정/삭제 권한이 없습니다(작성자가 아닙니다)",
     REPLY_OK: "댓글 작성 성공",
