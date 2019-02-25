@@ -32,26 +32,41 @@
         <v-layout row wrap>
             <fieldset name="search-result-default" style="width:100%">
                 <legend>검색 결과</legend>
-                    <v-flex v-for="total in totals" :key="total.idx" xs100>
-                        <v-card-media :src="total.profile_img" height="200px"></v-card-media>
-                            <v-card-text>{{ total.legi_name }}</v-card-text>
+                    <v-flex v-for="total in totals" :key="total.idx">
+                        <!-- <v-card @click.native="dialog=true"> -->
+                        <v-card @click.native="getDetails">
+                            <v-img :src="total.profile_img" width="100px"></v-img>
+                            <v-card-title>{{ total.legi_name }}</v-card-title>
+                        </v-card>
                     </v-flex>
-                <v-esle>
-                </v-esle>
             </fieldset>
         </v-layout>
-    </template>
     <div>
         <v-layout>
-            <fieldset name="search-result-success">
+            <fieldset name="search-result-success" style="widtt:100">
                 <legend>검색 결과</legend>
-                <v-flex v-for="result in results" :key="result.idx" xs100>
-                    <v-card-media :src="result.profile_img" height="200px"></v-card-media>
-                    <v-card-text>{{ result.legi_name }}</v-card-text>
+                <v-flex v-for="result in results" :key="result.idx">
+                    <v-card @click.native="getDetails">
+                            <v-img :src="result.profile_img" width="100px"></v-img>
+                            <v-card-title>{{ result.legi_name }}</v-card-title>
+                        </v-card>
                 </v-flex>
             </fieldset>
         </v-layout>
     </div>
+            <v-layout row justify-center style="position: relative;">
+                <v-dialog v-model="dialog" lazy absolute>
+                    <v-card v-model="details">
+                        <v-card-title>
+                            
+                        </v-card-title>
+                        <v-card-responsive></v-card-responsive>
+                        <v-card-text></v-card-text>
+                        <v-btn @click.native="updateDetail()">업데이트</v-btn>
+                    </v-card>
+                </v-dialog>
+            </v-layout>
+    </template>
     </v-container>
 </template>
 
@@ -62,6 +77,7 @@ import { mapGetters } from 'vuex'
 export default {
     data: () => {
         return {
+            dialog: false,
         }
     },
     computed: {
@@ -71,12 +87,20 @@ export default {
             ordinals: 'getOrdinals',
             crimes: 'getCrimes',
             totals: 'getTotals',
-            results: 'getResults'
+            results: 'getResults',
+            details: 'getDetails'
         }),
     },
     methods: {
         submitOptions() {
             this.$store.dispatch('submitOptions', {name: this.name, party: this.party, city: this.city, ordinal: this.ordinal, crime: this.crime})
+        },
+        getDetails(){
+            this.$store.dispatch('getDetails')
+            return dialog=true
+        },
+        updateDetail() {
+            this.$store.dispatch('updateDetail', {name: this.name, party: this.party, city: this.city, ordinal: this.ordinal, crime: this.crime})
         }
     },
     created ()  {

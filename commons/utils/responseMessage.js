@@ -17,6 +17,7 @@ module.exports = {
     LOGIN_FAIL: "로그인 실패",
 
     LIST_SUCCESS: "리스트 조회 성공",
+    LIST_FAIL: "리스트 조회 실패",
     LEGISLATOR_SUCCESS: "국회의원 정보 조회 성공",
     LEGISLATOR_DB_INSERT: "국회의원 정보 입력 성공",
     LEGISLATOR_DETAIL_SUCCESS: "국회의원 상세 정보 조회 성공",
@@ -69,8 +70,10 @@ module.exports = {
 
     USER_POINT_INCRESE_ERROR: "유저 포인트 증가 에러",
 
-    REPLY_LIKE_OK: "좋아요/싫어요 성공",
-    REPLY_LIKE_CANCEL_OK: "좋아요/싫어요 취소 성공",
+    REPLY_LIKE_OK: "좋아요 성공",
+    REPLY_DISLIKE_OK: "싫어요 성공",
+    REPLY_LIKE_CANCEL_OK: "좋아요 취소 성공",
+    REPLY_DISLIKE_CANCEL_OK: "싫어요 취소 성공",
     REPLY_LIKE_ALREADY: "이미 좋아요 되어있습니다",
     REPLY_DISLIKE_ALREADY: "이미 싫어요 되어있습니다",
     REPLY_LIKE_READ_ERROR: "좋아요 읽기 에러",
