@@ -63,14 +63,15 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
 });
 
 //댓글 삭제
-router.delete('/:comment_idx', authUtil.isLoggedin, async (req, res) => {
+router.delete('/', authUtil.isLoggedin, async (req, res) => {
+    const comment_idx = req.body.comment_idx;
     const writer = req.body.writer;
 
     if(writer != req.decoded.idx){
         res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
     } else {
         const deleteCommentQuery = 'DELETE FROM legislator_comment WHERE idx=?';
-        const deleteCommentResult = await db.queryParam_Arr(deleteCommentQuery, req.params.comment_idx);
+        const deleteCommentResult = await db.queryParam_Arr(deleteCommentQuery, comment_idx);
         
         if(!deleteCommentResult){
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
