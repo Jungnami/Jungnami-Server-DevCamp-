@@ -21,7 +21,9 @@ router.get('/party/:party_cd/:isLike', async (req, res) => {
         } else {
             let tmpResult;
             let resArr = new Array();
-
+            let result = {
+                'timeStamp': obj.timeStamp
+            };
             try {
                 if (isLike) {
                     tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allLikeResult.txt'), 'UTF-8'));
