@@ -36,6 +36,7 @@ router.get('/party/:party_cd/:isLike', async (req, res) => {
             let j = 1;
             for(let i = 0; i < tmpResult.length; i++){
                 if(tmpResult[i].party_cd == partyCd){
+                    j = String(j)
                     tmpResult[i].party_rank = j;
                     resArr.push(tmpResult[i]);
                     j = j + 1;
@@ -71,7 +72,7 @@ router.get('/city/:city_cd/:isLike', async (req, res) => {
                 if (isLike) {
                     tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allLikeResult.txt'), 'UTF-8'));
                 } else {
-                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allDisikeResult.txt'), 'UTF-8'));
+                    tmpResult = JSON.parse(voteFileSys.readFileSync(path.resolve('.' + '/../vote/allDislikeResult.txt'), 'UTF-8'));
                 }
             } catch (readFileSysError) {
                 res.status(200).send(authUtil.successFalse(responseMessage.VOTE_RESULT_FILE_READ_ERROR, statusCode.VOTE_VOTE_FILE_SYS_ERROR));
@@ -79,6 +80,7 @@ router.get('/city/:city_cd/:isLike', async (req, res) => {
             let j = 1;
             for(let i = 0; i < tmpResult.length; i++){
                 if(tmpResult[i].city_cd == cityCd){
+                    j = String(j)
                     tmpResult[i].city_rank = j;
                     resArr.push(tmpResult[i]);
                     j = j + 1;
@@ -87,8 +89,10 @@ router.get('/city/:city_cd/:isLike', async (req, res) => {
             result.data = resArr;
 
             if(err) {
+                console.log(err)
                 res.status(200).send(authUtil.successFalse(responseMessage.LIST_FAIL, statusCode.PMS_NO_CONTENT))
             } else if(result.data == ''){
+                console.log(result.data)
                 res.status(200).send(authUtil.successFalse(responseMessage.LIST_FAIL, statusCode.PMS_NO_CONTENT))
             } else {
             res.status(200).send(authUtil.successTrue(statusCode.PMS_OK, responseMessage.LIST_SUCCESS, result));

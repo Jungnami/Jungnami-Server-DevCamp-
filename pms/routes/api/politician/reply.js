@@ -95,7 +95,7 @@ router.post('/notify', authUtil.isLoggedin, async (req, res,) => {
                 res.status(200).send(authUtil.successFalse(responseMessage.REPLYNOTIFYDBERROR, statusCode.REPLYNOTIFYDBERROR));
             }
 
-            const increaseNotifyQuery = 'UPDATE membership2 SET cumulative_notify=cumulative_notify+1 WHERE idx=?';
+            const increaseNotifyQuery = 'UPDATE membership SET cumulative_notify=cumulative_notify+1 WHERE idx=?';
             const increaseNotifyResult = await connection.query(increaseNotifyQuery, [req.decoded.idx]);
             if(!increaseNotifyResult){
                 res.status(200).send(authUtil.successFalse(responseMessage.USERNOTIFYCOUNTERROR, statusCode.USERNOTIFYCOUNTERROR));                
@@ -105,7 +105,7 @@ router.post('/notify', authUtil.isLoggedin, async (req, res,) => {
         if(!Transaction) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLYNOTIFYTRANJECTIONERROR, statusCode.REPLYNOTIFYDBERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(responseMessage.REPLYNOTIFYOK, NULL));
+            res.status(200).send(authUtil.successTrue(responseMessage.REPLYNOTIFYOK, statusCode.REPLY_NOTIFY_OK));
         }
     }
 });
