@@ -11,6 +11,7 @@ module.exports = {
 
         const response = await request('GET', url + queryParams);
         const json = JSON.parse(xml2json.toJson(response.body));
+
         const item = json.response.body.items.item;
 
         let party_name, party_cd;

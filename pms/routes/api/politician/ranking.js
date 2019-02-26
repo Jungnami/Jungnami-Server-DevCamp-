@@ -38,6 +38,7 @@ router.get('/party/:party_cd/:isLike', async (req, res) => {
                 if(tmpResult[i].party_cd == partyCd){
                     j = String(j)
                     tmpResult[i].categorized_rank = j;
+                    // if(tempResult[i-1].categorized_rank==tempResult)
                     resArr.push(tmpResult[i]);
                     j = parseInt(j) + 1;
                 }

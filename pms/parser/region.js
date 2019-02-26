@@ -11,7 +11,6 @@ module.exports = {
         queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('200');
 
         const response = await request('GET', url + queryParams);
-
         const json = JSON.parse(xml2json.toJson(response.body));
         const item = json.response.body.items.item;
 
@@ -30,7 +29,7 @@ module.exports = {
 
         const insertQuery = 'INSERT INTO region VALUES ?';
         const insertResult = await db.queryParam_Parse(insertQuery, [result]);
-
+        
         const cityQuery = 'INSERT city (city_name) SELECT city FROM region GROUP BY city';
         const cityResult = await db.queryParam_None(cityQuery);
     }
