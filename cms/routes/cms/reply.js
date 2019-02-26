@@ -85,14 +85,15 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
 //댓글 삭제
 router.delete("/", authUtil.isLoggedin, async (req, res) => {
     let reply_idx = req.body.reply_idx;
-    let writer = req.body.idx;
+    let writer = req.body.writer;
 
+    console.log("w : " + writer + ", user : " + reply_idx);
     if (writer != req.decoded.idx) {
         res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
     } else {
-        var deleteRepQuery = 'DELETE FROM reply WHERE idx = ?';
-        let deleteRepResult = await db.queryParam_Arr(deleteRepQuery, [reply_idx]);
-
+        var deleteRepQuery = 'DELETE FROM reply WHERE idx = ? AND writer = ?';
+        let deleteRepResult = await db.queryParam_Arr(deleteRepQuery, [reply_idx, writer]);
+        
         if (!deleteRepResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_DELETE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
