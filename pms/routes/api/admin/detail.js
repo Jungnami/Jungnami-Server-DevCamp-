@@ -8,19 +8,19 @@ const router = express.Router();
 
 //국회의원 상세 정보 조회
 router.get('/:idx', async(req, res, next) => {
-    const selectLegiQuery = 'SELECT legi_name, party_name, region, ordinal, profile_img, reelection, crime, sns, phone FROM legislator WHERE idx=?';
+    const selectLegiQuery = 'SELECT legi_name, party_name, region, ordinal, profile_img, reelection, crime, twitter, facebook, blog, phone FROM legislator WHERE idx=?';
     const selectLegiResult = await db.queryParam_Arr(selectLegiQuery, req.params.idx);
 
     if(!selectLegiResult) {
         res.status(statusCode.OK).send(authUtil.successFalse(responseMessage.DB_ERROR, statusCode.DB_ERROR));
     } else {
-        res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_DETAIL_LOAD_SUCCESS, responseMessage.LEGISLATOR_DETAIL_SUCCESS,selectLegiResult));
+        res.status(statusCode.OK).send(authUtil.successTrue(statusCode.PMS_OK, responseMessage.LEGISLATOR_DETAIL_SUCCESS,selectLegiResult));
     }
 })
 
 //국회의원 상세 정보 수정    
 router.put('/update/:idx', async(req, res, next) => {
-    let updateLegiQuery = 'UPDATE legislator SET legi_name=?, party_name=?, region=?, ordinal=?, profile_img=?, reelection=?, crime=?, sns=?, phone=? WHERE idx=?';
+    let updateLegiQuery = 'UPDATE legislator SET legi_name=?, party_name=?, region=?, ordinal=?, profile_img=?, reelection=?, crime=?, twitter, facebook, blog=?, phone=? WHERE idx=?';
     //  ?=? WHERE idx=?';
     const option = Object.keys(req.body);
     // const value = new Array();

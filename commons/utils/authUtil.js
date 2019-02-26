@@ -18,8 +18,7 @@ const authUtil = {
         return {
             status : status,
             success: false,
-            message: message,
-            data: null
+            message: message
         }
     },
     parseError: (errors) => { 
@@ -44,14 +43,14 @@ const authUtil = {
         var token = req.headers['token'];
 
         if (!token) {
-            return res.json(authUtil.successFalse(null, responseMessage.EMPTY_TOKEN, statusCode.AUTH_BAD_REQUEST));
+            return res.json(authUtil.successFalse(responseMessage.EMPTY_TOKEN, statusCode.AUTH_BAD_REQUEST));
         } else {
             const user = jwt.verify(token);
             
             if (user == -3) {
-                return res.json(authUtil.successFalse(null, responseMessage.INVALID_TOKEN, statusCode.AUTH_BAD_REQUEST));
+                return res.json(authUtil.successFalse(responseMessage.EXPRIED_TOKEN, statusCode.AUTH_EXPRIED_TOKEN));
             } else if (user == -2) {
-                return res.json(authUtil.successFalse(null, responseMessage.EMPTY_TOKEN, statusCode.AUTH_BAD_REQUEST));
+                return res.json(authUtil.successFalse(responseMessage.INVALID_TOKEN, statusCode.AUTH_INVALID_TOKEN));
             } else {
                 req.decoded = user;
                 next();
@@ -63,7 +62,7 @@ const authUtil = {
         const user = req.decoded;
 
         if (user.grade != 0) {
-            return res.json(authUtil.successFalse(null, responseMessage.NOT_ADMIN, statusCode.AUTH_BAD_REQUEST));
+            return res.json(authUtil.successFalse(responseMessage.NOT_ADMIN, statusCode.AUTH_BAD_REQUEST));
         } 
         next();
     }

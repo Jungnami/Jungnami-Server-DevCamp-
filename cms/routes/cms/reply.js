@@ -9,20 +9,19 @@ const db = require('../../module/pool');
 
 //댓글 보기 + 대댓글 보기
 router.get('/:article_id', async (req, res) => {
-    let parent = req.query.parent;
-    var selectReqQuery = 'SELECT * FROM reply WHERE article_id = ? AND parent = ?';
-
-    if (!req.query.parent) {
-        selectReqQuery += " ORDER BY depth"
-    } else {
-        parent = 0;
-    }
-    let selectReqResult = await db.queryParam_Arr(selectReqQuery, [req.params.article_id, parent]);
+    var selectReqQuery = 'SELECT * FROM reply WHERE article_id = ? AND parent = 0 ORDER BY writetime';
+    let selectReqResult = await db.queryParam_Arr(selectReqQuery, [req.params.article_id]);
 
     if (!selectReqResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_READ_ERROR, statusCode.REPLY_DB_ERROR));
     } else {
-        res.status(200).send(suthUtil.successTrue(responseMessage.REPLY_OK, selectReqResult));
+        for (let i = 0; i < selectReqResult.length; i++) {
+            var selectReReplyQuery = 'SELECT * FROM reply WHERE article_id = ? AND parent = ? ORDER BY writetime';
+            let selectReReplyReuslt = await db.queryParam_Arr(selectReReplyQuery, [req.params.article_id, selectReqResult[i].idx]);
+
+            selectReqResult[i].rereply = selectReReplyReuslt;
+        }
+        res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK, selectReqResult));
     }
 });
 
@@ -30,13 +29,24 @@ router.get('/:article_id', async (req, res) => {
 router.post('/', authUtil.isLoggedin, async (req, res) => {
     let articleIdx = req.body.articleIdx;
     let parent = req.body.parent;
-    let depth = req.body.depth;
+    let depth = 0;
     let content = req.body.content;
     let writer = req.decoded.idx;
     let writeTime = moment().format('YYYY-MM-DD hh:mm:ss');
 
-    var insertRepQuery = 'INSERT INTO reply VALUES (?, ?, ?, ?, ?)';
-    let insertRepResult = await db.queryParam_Arr(insertRepQuery, [articleIdx, writer, content, writeTime]);
+    if (parent != 0) {
+        var selectReplyQuery = 'SELECT depth FROM reply WHERE parent = ? ORDER BY depth DESC LIMIT 1';
+        let selectReplyResult = await db.queryParam_Arr(selectReplyQuery, [parent]);
+
+        if (selectReplyResult.length == 0) {
+            depth = 1;
+        } else {
+            depth = selectReplyResult[0].depth + 1;
+        }
+    }
+
+    var insertRepQuery = 'INSERT INTO reply (article_id, writer, content, writetime, parent, depth) VALUES (?, ?, ?, ?, ?, ?)';
+    let insertRepResult = await db.queryParam_Arr(insertRepQuery, [articleIdx, writer, content, writeTime, parent, depth]);
 
     if (!insertRepResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_INSERT_ERROR, statusCode.REPLY_DB_ERROR));
@@ -45,9 +55,9 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
         let updatePointResult = await db.queryParam_Arr(updatePointQuery, [req.decoded.idx]);
 
         if (!updatePointResult) {
-            res.status(200).send(authUtil.successFalse(responseMessage.USER_POINT_INCRESE_ERROR, statusCode.REPLY_USER_POINT_DB_ERROR));
+            res.status(200).send(authUtil.successFalse(responseMessage.USER_POINT_INCRESE_ERROR, statusCode.AUTH_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_CREATED, responseMessage.REPLY_OK));
         }
     }
 });
@@ -67,42 +77,43 @@ router.put('/', authUtil.isLoggedin, async (req, res) => {
         if (!updateRepResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_UPDATE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_PUT_OK));
         }
     }
-
-
 });
 
 //댓글 삭제
-router.delete("/:reply_idx", authUtil.isLoggedin, async (req, res) => {
+router.delete("/", authUtil.isLoggedin, async (req, res) => {
+    let reply_idx = req.body.reply_idx;
     let writer = req.body.writer;
 
     if (writer != req.decoded.idx) {
         res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
     } else {
-        var deleteRepQuery = 'DELETE FROM reply WHERE idx = ?';
-        let deleteRepResult = await db.queryParam_Arr(deleteRepQuery, [req.params.reply_idx]);
-
+        var deleteRepQuery = 'DELETE FROM reply WHERE idx = ? AND writer = ?';
+        let deleteRepResult = await db.queryParam_Arr(deleteRepQuery, [reply_idx, writer]);
+        
         if (!deleteRepResult) {
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_DB_DELETE_ERROR, statusCode.REPLY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_DELETE_OK));
         }
     }
 
 });
 
-router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res) => {
-    var checkNotifyQuery = 'SELECT * FROM notify WHERE idx = ?';
-    let checkNotifyResult = await db.queryParam_Arr(checkNotifyQuery, [req.decoded.idx]);
+router.post('/notify/', authUtil.isLoggedin, async (req, res) => {
+    var checkNotifyQuery = 'SELECT * FROM notify WHERE user_idx = ? AND reply_idx = ?';
+    let checkNotifyResult = await db.queryParam_Arr(checkNotifyQuery, [req.decoded.idx, req.body.reply_idx]);
 
     if (!checkNotifyResult) {
-
+        res.status(200).send(authUtil.successFalse(responseMessage.REPLY_NOTIFY_DB_ERROR, statusCode.REPLY_NOTIFY_DB_ERROR));
+    } else if (checkNotifyResult.length == 1) {
+        res.status(200).send(authUtil.successFalse(responseMessage.REPLY_NOTIFY_ALREADY, statusCode.REPLY_NOTIFY_BAD_REQUEST));
     } else {
-        let Transaction = await db.Transaction(async (connection) => {
-            var notifyQuery = 'INSERT INTO notify VALUES (?, ?, ?, ?)';
-            let notifyResult = await connection.query(notifyQuery, [req.decoded.idx, req.params.reply_idx, moment().format('YYYY-MM-DD hh:mm:ss'), req.body.reason]);
+        let notifyTransaction = await db.Transaction(async (connection) => {
+            var notifyQuery = 'INSERT INTO notify (user_idx, reply_idx, timestamp, reason) VALUES (?, ?, ?, ?)';
+            let notifyResult = await connection.query(notifyQuery, [req.decoded.idx, req.body.reply_idx, moment().format('YYYY-MM-DD hh:mm:ss'), req.body.reason]);
             if (!notifyResult) {
                 res.status(200).send(authUtil.successFalse(responseMessage.REPLY_NOTIFY_DB_ERROR, statusCode.REPLY_NOTIFY_DB_ERROR));
             }
@@ -114,10 +125,10 @@ router.post('/notify/:reply_idx', authUtil.isLoggedin, async (req, res) => {
             }
         });
 
-        if (!Transaction) {                
+        if (!notifyTransaction) {                
             res.status(200).send(authUtil.successFalse(responseMessage.REPLY_NOTIFY_TRANJECTION_ERROR, statusCode.REPLY_NOTIFY_DB_ERROR));
         } else {
-            res.status(200).send(authUtil.successTrue(statsCode.REPLY_OK, responseMessage.REPLY_NOTIFY_OK));
+            res.status(200).send(authUtil.successTrue(statusCode.REPLY_OK, responseMessage.REPLY_NOTIFY_OK));
         }
     } 
 });

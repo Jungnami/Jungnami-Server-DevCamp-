@@ -28,14 +28,14 @@ router.get('/naver/callback', async (req, res) => {
     }
 });
 
-//naver 로그인
-router.get('/kakao', passport.authenticate('kakao'));
+// //naver 로그인
+// router.get('/kakao', passport.authenticate('kakao'));
 
-//naver login 연동 콜백
-router.get('/kakao/callback', passport.authenticate('kakao', {
-    successRedirect: '/auth/login/success',
-    failureRedirect: '/auth/login/fail'
-}));
+// //naver login 연동 콜백
+// router.get('/kakao/callback', passport.authenticate('kakao', {
+//     successRedirect: '/auth/login/success',
+//     failureRedirect: '/auth/login/fail'
+// }));
 
 router.get('/fail', async (req, res) => {
     res.status(200).send(authUtil.successFalse(responseMessage.LOGIN_FAIL, statusCode.INTERNAL_SERVER_ERROR));
