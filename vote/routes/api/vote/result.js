@@ -11,8 +11,10 @@ const db = require('../../../module/pool');
 const redisClient = require('../../../module/redis');
 
 //투표 결과 받기
-router.get('/:isLike', async (req, res) => {
+router.get('/:isLike/:page', async (req, res) => {
     let isLike = parseInt(req.params.isLike);
+    let page = parseInt(req.params.page);
+    let nubmer = 15;
 
     redisClient.hgetall('voteResult', (err, obj) => {
         if (err) {
@@ -22,11 +24,18 @@ router.get('/:isLike', async (req, res) => {
                 'timeStamp': obj.timeStamp
             };
             try {
+                let returnResult = [];
                 if (isLike) {
                     result.data = JSON.parse(voteFileSys.readFileSync('allLikeResult.txt', 'UTF-8'));
                 } else {
                     result.data = JSON.parse(voteFileSys.readFileSync('allDislikeResult.txt', 'UTF-8'));
                 }
+
+                for (let i = page; i < page + nubmer; i++) {
+                    returnResult.push(result.data[i]);
+                }
+
+                result.data = returnResult;
                 
                 res.status(200).send(authUtil.successTrue(statusCode.VOTE_OK, responseMessage.READ_VOTE_RESULT, result));
             } catch (readFileSysError) {
