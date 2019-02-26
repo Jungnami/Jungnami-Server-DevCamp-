@@ -87,7 +87,6 @@ router.delete("/", authUtil.isLoggedin, async (req, res) => {
     let reply_idx = req.body.reply_idx;
     let writer = req.body.writer;
 
-    console.log("w : " + writer + ", user : " + reply_idx);
     if (writer != req.decoded.idx) {
         res.status(200).send(authUtil.successFalse(responseMessage.NO_AUTHORITY, statusCode.REPLY_UNAUTHORIZED));
     } else {
