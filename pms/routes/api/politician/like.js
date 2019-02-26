@@ -18,7 +18,7 @@ router.post('/', authUtil.isLoggedin, async (req, res, next) => {
 
     if(!selectLikeResult) {
         res.status(200).send(authUtil.successFalse(responseMessage.REPLY_LIKE_READ_ERROR, statusCode.REPLY_LIKE_DB_ERROR))
-    } else if(selectLikeResult.length === 1){
+    } else if(selectLikeResult.length == 1){
         const deleteLikeQuery = 'DELETE FROM legislator_comment_like WHERE user_idx = ? AND comment_idx = ? AND like_flag = ?';
         const deleteLikeResult = await db.queryParam_Arr(deleteLikeQuery, [req.decoded.idx, reply_idx, isLike]);;
 
