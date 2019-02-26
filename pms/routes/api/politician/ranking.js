@@ -37,9 +37,9 @@ router.get('/party/:party_cd/:isLike', async (req, res) => {
             for(let i = 0; i < tmpResult.length; i++){
                 if(tmpResult[i].party_cd == partyCd){
                     j = String(j)
-                    tmpResult[i].party_rank = j;
+                    tmpResult[i].categorized_rank = j;
                     resArr.push(tmpResult[i]);
-                    j = j + 1;
+                    j = parseInt(j) + 1;
                 }
             }
             result.data = resArr;
@@ -81,9 +81,9 @@ router.get('/city/:city_cd/:isLike', async (req, res) => {
             for(let i = 0; i < tmpResult.length; i++){
                 if(tmpResult[i].city_cd == cityCd){
                     j = String(j)
-                    tmpResult[i].city_rank = j;
+                    tmpResult[i].categorized_rank = j;
                     resArr.push(tmpResult[i]);
-                    j = j + 1;
+                    j = parseInt(j) + 1;
                 }
             }
             result.data = resArr;
