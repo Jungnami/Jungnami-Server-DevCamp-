@@ -48,7 +48,15 @@ router.post('/', async (req, res, next) => {
 
         // 이미 회원가입이 되어있을 때
         if (checkIdResult.length != 0) {
-            res.status(200).send(authUtil.successFalse(responseMessage.ALREADY_USER, statusCode.AUTH_BAD_REQUEST));
+            token = jwt.sign({
+                idx: checkIdResult[0].idx,
+                id: checkIdResult[0].id,
+                grade: checkIdResult[0].grade
+            });
+            res.status(200).send(authUtil.successTrue(statusCode.AUTH_OK, responseMessage.LOGIN_SUCCESS, {
+                'token': token,
+                "refreshToken": checkIdResult[0].refreshToken
+            }));
         } else { // 다른 기기이고 회원이 아닐때
             let userInsertTransaction = await db.Transaction(async (connection) => {
                 var inserUserQuery = 'INSERT INTO membership (auth_type, id, name, profile_img, age, gender, status, grade, point, fcm_token, refresh_token, access_date, regist_date, cumulative_notify) ' +
@@ -60,7 +68,6 @@ router.post('/', async (req, res, next) => {
                     next(500);
                 } else {
                     if (idx == -1) idx = insertUserResult.insertId;
-                    console.log("-0000000--" + idx)
 
                     var insertBallotQuery = 'INSERT INTO vote (idx, ballot, update_date, sequence) VALUES (?, ?, ?, ?)';
                     let insertBallotResult = await connection.query(insertBallotQuery, [idx, 5, today, 1]);
