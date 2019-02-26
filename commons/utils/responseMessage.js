@@ -13,8 +13,11 @@ module.exports = {
     UPDATE_USER: "회원 정보 수정 성공",
     DELETE_USER: "회원 탈퇴 성공",
 
+    NO_ACCESS_TOKEN: "엑세스 토큰이 없습니다.",
+    ALREADY_USER: "이미 회원입니다.",
     LOGIN_SUCCESS: "로그인 성공",
     LOGIN_FAIL: "로그인 실패",
+    LOGIN_TRANSACTION_ERROR: "로그인 트렌젝션 에러",
 
     LIST_SUCCESS: "리스트 조회 성공",
     LIST_FAIL: "리스트 조회 실패",

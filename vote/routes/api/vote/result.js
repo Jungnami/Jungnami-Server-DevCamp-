@@ -116,11 +116,11 @@ cron.schedule('*/5 * * * *', async () => {
                 getAllLikeResult = selectAllLegiResult;
                 getAllDislikeResult = selectAllLegiResult;
             } else {
-                await addRestRegi(selectAllLegiResult, getAllLikeResult);
-                await addRestRegi(selectAllLegiResult, getAllDislikeResult);
-
                 getAllLikeResult = await changeContent(getAllLikeResult);
                 getAllDislikeResult = await changeContent(getAllDislikeResult);
+
+                await addRestRegi(selectAllLegiResult, getAllLikeResult);
+                await addRestRegi(selectAllLegiResult, getAllDislikeResult);
             }
 
             //투표 결과 txt 파일로 저장
