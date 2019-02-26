@@ -115,8 +115,8 @@ cron.schedule('*/5 * * * *', async () => {
                 getAllLikeResult = selectAllLegiResult;
                 getAllDislikeResult = selectAllLegiResult;
             } else {
-                addRestRegi(selectAllLegiResult, getAllLikeResult);
-                addRestRegi(selectAllLegiResult, getAllDislikeResult);
+                await addRestRegi(selectAllLegiResult, getAllLikeResult);
+                await addRestRegi(selectAllLegiResult, getAllDislikeResult);
 
                 getAllLikeResult = await changeContent(getAllLikeResult);
                 getAllDislikeResult = await changeContent(getAllDislikeResult);
@@ -181,12 +181,12 @@ async function changeContent(result) {
     return result;
 };
 
-function addRestRegi(legiList, result) {
+async function addRestRegi(legiList, result) {
     let lastIdx = result.length;
     for (var i = 0; i < legiList.length; i++) {
         let flag = 0;
         for (var j = 0; j < lastIdx; j++) {
-            if (legiList[i].idx == result[j].idx) {    //투표한 사람이 없는 의원일 경우
+            if (legiList[i].idx == result[j].idx) {    //투표 결과가 있는 의원일 경우
                 flag = 1;
             }
         }
