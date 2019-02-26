@@ -53,9 +53,10 @@ router.post('/', async (req, res, next) => {
                 id: checkIdResult[0].id,
                 grade: checkIdResult[0].grade
             });
+
             res.status(200).send(authUtil.successTrue(statusCode.AUTH_OK, responseMessage.LOGIN_SUCCESS, {
                 'token': token,
-                "refreshToken": checkIdResult[0].refreshToken
+                "refreshToken": checkIdResult[0].refresh_token
             }));
         } else { // 다른 기기이고 회원이 아닐때
             let userInsertTransaction = await db.Transaction(async (connection) => {
